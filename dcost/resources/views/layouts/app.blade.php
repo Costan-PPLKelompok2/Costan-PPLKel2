@@ -13,23 +13,19 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <!-- Styles -->
+        @livewireStyles
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
-            <!-- Navbar -->
-            <nav class="bg-gradient-to-r from-indigo-500 to-purple-600 p-4 shadow-lg">
-                <div class="max-w-7xl mx-auto flex justify-between items-center">
-                    <a href="#" class="text-white text-2xl font-bold">Kostify</a>
-                    <div class="space-x-4">
-                        <a href="#" class="text-white hover:text-indigo-200">Profile</a>
-                        <a href="#" class="text-white hover:text-indigo-200">Logout</a>
-                    </div>
-                </div>
-            </nav>
+        <x-banner />
+
+        <div class="min-h-screen bg-gray-100">
+            @livewire('navigation-menu')
 
             <!-- Page Heading -->
             @if (isset($header))
-                <header class="bg-white dark:bg-gray-800 shadow">
+                <header class="bg-white shadow">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
@@ -37,14 +33,13 @@
             @endif
 
             <!-- Page Content -->
-            <main class="flex-grow">
+            <main>
                 {{ $slot }}
             </main>
-
-            <!-- Footer -->
-            <footer class="bg-gray-800 text-white p-4 text-center">
-                <p>© 2025 Kostify. Made for college vibes.</p>
-            </footer>
         </div>
+
+        @stack('modals')
+
+        @livewireScripts
     </body>
 </html>
