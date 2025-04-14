@@ -27,5 +27,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+use App\Http\Controllers\ReviewController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/kos/{kos_id}/review', [ReviewController::class, 'store'])->name('review.store');
+});
+
+Route::get('/kos/{kos_id}/reviews', [ReviewController::class, 'index'])->name('review.index');
 
 require __DIR__.'/auth.php';
