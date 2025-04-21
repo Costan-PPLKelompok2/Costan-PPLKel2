@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('nomor_telepon')->nullable();
             $table->text('preferensi_pencarian')->nullable();
-            $table->string('foto_profil')->nullable();
+            $table->string('foto_profil')->nullable(); // Foto profil
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

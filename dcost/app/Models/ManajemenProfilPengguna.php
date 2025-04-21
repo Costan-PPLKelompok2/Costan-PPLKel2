@@ -25,4 +25,10 @@ class ManajemenProfilPengguna extends Model
         'password',
         'remember_token',
     ];
+
+    // Mutator untuk mendapatkan url foto profil
+    public function getFotoProfilUrlAttribute()
+    {
+        return asset('storage/' . $this->foto_profil);
+    }
 }
