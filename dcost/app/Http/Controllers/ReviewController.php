@@ -48,7 +48,7 @@ class ReviewController extends Controller
         return redirect()->back()->with('success', 'Review berhasil diubah!');
     }
 
-    // DELETE
+    // 
     public function destroy($id)
     {
         $review = Review::findOrFail($id);
