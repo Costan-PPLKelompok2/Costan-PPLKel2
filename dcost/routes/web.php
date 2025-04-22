@@ -29,10 +29,13 @@ Route::middleware('auth')->group(function () {
 });
 use App\Http\Controllers\ReviewController;
 
-Route::middleware(['auth'])->group(function () {
-    Route::post('/kos/{kos_id}/review', [ReviewController::class, 'store'])->name('review.store');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/review', [ReviewController::class, 'store'])->name('review.store');
+    Route::get('/kos/{id}/reviews', [ReviewController::class, 'show'])->name('review.show');
+    Route::put('/review/{id}', [ReviewController::class, 'update'])->name('review.update');
+    Route::delete('/review/{id}', [ReviewController::class, 'destroy'])->name('review.destroy');
 });
 
-Route::get('/kos/{kos_id}/reviews', [ReviewController::class, 'index'])->name('review.index');
 
 require __DIR__.'/auth.php';
