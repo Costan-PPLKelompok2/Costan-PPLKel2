@@ -18,7 +18,7 @@ class KosController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_kos' => 'required|string|max:255',
+            'nama_kos' => 'required',
             'deskripsi' => 'required',
             'alamat' => 'required',
             'harga' => 'required|numeric',
@@ -26,13 +26,10 @@ class KosController extends Controller
             'foto' => 'nullable|image|max:2048',
         ]);
 
-        $fotoPath = null;
-        if ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('foto_kos', 'public');
-        }
+        $fotoPath = $request->file('foto') ? $request->file('foto')->store('foto_kos', 'public') : null;
 
         Kos::create([
-            'user_id' => Auth::id(), // atau auth()->id()
+            'user_id' => auth()->id(),
             'nama_kos' => $request->nama_kos,
             'deskripsi' => $request->deskripsi,
             'alamat' => $request->alamat,
@@ -41,6 +38,6 @@ class KosController extends Controller
             'foto' => $fotoPath,
         ]);
 
-        return redirect()->route('kos.create')->with('success', 'Kos berhasil ditambahkan!');
+        return redirect()->route('kos.create')->with('success', 'Kos berhasil ditambahkan.');
     }
 }

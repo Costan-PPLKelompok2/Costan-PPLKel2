@@ -22,7 +22,7 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/kos/create', [KosController::class, 'create'])->name('kos.create');
     Route::post('/kos', [KosController::class, 'store'])->name('kos.store');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
