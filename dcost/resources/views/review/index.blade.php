@@ -1,7 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+    <div class="container">
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
     <h2>Review untuk Kos: {{ $kos->name }}</h2>
 
     <!-- Form Tambah Review -->
@@ -36,6 +41,8 @@
 
                 @auth
                     @if($review->user_id == Auth::id())
+                        <a href="{{ route('review.edit', $review->id) }}" class="btn btn-sm btn-warning">Edit</a>
+
                         <form action="{{ route('review.destroy', $review->id) }}" method="POST" class="d-inline">
                             @csrf
                             @method('DELETE')

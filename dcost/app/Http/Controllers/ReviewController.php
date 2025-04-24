@@ -1,15 +1,22 @@
 <?php
 
-namespace App\Http\Controllers; // Pastikan namespace ini ada
+namespace App\Http\Controllers;
 
 use App\Models\Review;
+use App\Models\Kos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller; // Impor Controller yang hilang
 
 class ReviewController extends Controller
 {
-    // CREATE
+    // 🔹 CREATE FORM
+    public function create($id)
+    {
+        $kos = Kos::findOrFail($id);
+        return view('review.create', compact('kos'));
+    }
+
+    // 🔹 STORE REVIEW
     public function store(Request $request)
     {
         $request->validate([
@@ -28,30 +35,66 @@ class ReviewController extends Controller
         return redirect()->back()->with('success', 'Review berhasil ditambahkan!');
     }
 
-    // READ
+    // 🔹 READ ALL REVIEWS for a KOS (Penyewa yang mau lihat ulasan sebelumnya)
     public function show($kos_id)
     {
+        $kos = Kos::findOrFail($kos_id);
         $reviews = Review::where('kos_id', $kos_id)->with('user')->latest()->get();
-        return view('reviews.index', compact('reviews'));
+        return view('review.index', compact('kos', 'reviews'));
     }
 
-    // UPDATE
+    // 🔹 READ REVIEWS for OWNER
+    public function ownerReviews()
+    {
+        $user = Auth::user();
+        $reviews = Review::whereHas('kos', function ($query) use ($user) {
+            $query->where('user_id', $user->id); // Asumsi pemilik kos = user_id pada model Kos
+        })->with(['user', 'kos'])->latest()->get();
+
+        return view('review.owner', compact('reviews'));
+    }
+
+    // 🔹 UPDATE REVIEW
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|max:1000',
+        ]);
+
         $review = Review::findOrFail($id);
+
         if ($review->user_id !== Auth::id()) {
             abort(403);
         }
 
-        $review->update($request->only('rating', 'comment'));
+        $review->update([
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ]);
 
-        return redirect()->back()->with('success', 'Review berhasil diubah!');
+        return redirect()->route('review.show', $review->kos_id)->with('success', 'Review berhasil diubah!');
+
     }
 
-    // 
+    //EDIT
+        public function edit($id)
+    {
+        $review = Review::findOrFail($id);
+
+        if ($review->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return view('review.edit', compact('review'));
+    }
+
+
+    // 🔹 DELETE REVIEW
     public function destroy($id)
     {
         $review = Review::findOrFail($id);
+
         if ($review->user_id !== Auth::id()) {
             abort(403);
         }
@@ -61,5 +104,3 @@ class ReviewController extends Controller
         return redirect()->back()->with('success', 'Review berhasil dihapus!');
     }
 }
-
-

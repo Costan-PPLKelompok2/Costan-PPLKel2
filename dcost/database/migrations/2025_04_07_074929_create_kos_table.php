@@ -5,20 +5,21 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up(): void
+    public function up()
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('kos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('kos_id')->constrained('kos')->onDelete('cascade');
-            $table->integer('rating');
-            $table->text('comment');
+            $table->string('name');
+            $table->string('alamat');
+            $table->integer('harga');
+            $table->text('fasilitas');
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('kos');
     }
 };
