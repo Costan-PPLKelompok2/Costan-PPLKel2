@@ -15,15 +15,24 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('usertype')->default(0);
-            $table->string('phone')->nullable();
-            $table->string('address')->nullable();
+            $table->string('phone_number')->nullable();
+            $table->text('address')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
+            
+            // Preferensi pencarian
+            $table->json('search_preferences')->nullable();
+            $table->decimal('price_min', 12, 2)->nullable();
+            $table->decimal('price_max', 12, 2)->nullable();
+            $table->string('preferred_location')->nullable();
+            $table->string('preferred_kos_type')->nullable(); // campur/pria/wanita
+            
+            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
