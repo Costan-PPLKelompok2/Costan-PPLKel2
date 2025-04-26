@@ -11,50 +11,55 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
-    public function edit(Request $request): View
+    public function show()
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        return view('profile.show', ['user' => Auth::user()]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function edit()
     {
-        $request->user()->fill($request->validated());
+        return view('profile.edit', ['user' => Auth::user()]);
+    }
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+    public function update(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone_number' => 'nullable|string|max:15',
+            'address' => 'nullable|string|max:255',
+            'profile_photo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+        ]);
+
+        $user = Auth::user();
+        $data = $request->only(['name', 'phone_number', 'address']);
+
+        if ($request->hasFile('profile_photo')) {
+            // Hapus foto lama jika ada
+            if ($user->profile_photo_path) {
+                Storage::delete('public/' . $user->profile_photo_path);
+            }
+            $path = $request->file('profile_photo')->store('profile_photos', 'public');
+            $data['profile_photo_path'] = $path;
         }
 
-        $request->user()->save();
+        $user->update($data);
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return redirect()->route('profile.show')->with('success', 'Profil berhasil diperbarui.');
     }
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+        $request->validate([
+            'confirmation' => 'required|in:DELETE',
         ]);
 
-        $user = $request->user();
-
-        Auth::logout();
-
+        $user = Auth::user();
+        if ($user->profile_photo_path) {
+            Storage::delete('public/' . $user->profile_photo_path);
+        }
         $user->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        Auth::logout();
+        return redirect('/')->with('success', 'Akun berhasil dihapus.');
     }
 }
