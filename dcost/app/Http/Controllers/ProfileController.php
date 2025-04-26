@@ -16,7 +16,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
-        return view('profile.show', compact('user'));
+        return view('profile_management.show', compact('user'));
     }
 
     /**
@@ -25,7 +25,7 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return view('profile.edit', compact('user'));
+        return view('profile_management.edit', compact('user'));
     }
 
     public function update(Request $request)

@@ -23,12 +23,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::prefix('profile')->middleware('auth')->group(function () {
-    Route::get('/', [UserController::class, 'show'])->name('profile.show');
-    Route::get('/edit', [UserController::class, 'edit'])->name('profile.edit');
-    Route::put('/update', [UserController::class, 'update'])->name('profile.update');
-    Route::delete('/delete', [UserController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
 
 Route::get('/redirect',[HomeController::class,"redirect"]);
 
