@@ -16,7 +16,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
-        return view('profile_management.show', compact('user'));
+        return view('profile.show', compact('user'));
     }
 
     /**
@@ -25,7 +25,40 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return view('profile_management.edit', compact('user'));
+        return view('profile.edit', compact('user'));
+    }
+
+    // Menampilkan form upload foto
+    public function editPhoto()
+    {
+        return view('profile.edit');  // Halaman form upload foto
+    }
+
+    // Mengupdate foto profil
+    public function updatePhoto(Request $request)
+    {
+        // Validasi input file
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Ambil user yang sedang login
+        $user = auth()->user();
+
+        // Jika user sebelumnya punya foto, hapus foto lama
+        if ($user->profile_photo_path) {
+            Storage::disk('public')->delete($user->profile_photo_path);
+        }
+
+        // Upload foto baru dan simpan path-nya
+        $path = $request->file('photo')->store('profile-photos', 'public');
+
+        // Update foto profil di database
+        $user->update([
+            'profile_photo_path' => $path,
+        ]);
+
+        return back()->with('success', 'Foto profil berhasil diperbarui!');
     }
 
     public function update(Request $request)

@@ -40,7 +40,14 @@
                         <div class="col-md-12">
                             <h1 class="m-b-20"><strong>Welcome To <br> Cost'an</strong></h1>
                             <p class="m-b-40">Cari kos idaman anda sekarang!</p>
-                            <p><a class="btn hvr-hover" href="#">Cari Kos Anda</a></p>
+                            <!-- Button for search, conditionally link to login/register or search -->
+                            <p>
+                                @guest
+                                    <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
+                                @else
+                                    <a class="btn hvr-hover" href="{{ route('login') }}">Cari Kos Anda</a> <!-- Gantilah 'search' dengan route pencarian kos Anda -->
+                                @endguest
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -52,7 +59,13 @@
                         <div class="col-md-12">
                             <h1 class="m-b-20"><strong>Welcome To <br> Cost'an</strong></h1>
                             <p class="m-b-40">Cari kos idaman anda sekarang!</p>
-                            <p><a class="btn hvr-hover" href="#">Cari Kos Anda</a></p>
+                            <p>
+                                @guest
+                                    <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
+                                @else
+                                    <a class="btn hvr-hover" href="{{ route('login') }}">Cari Kos Anda</a>
+                                @endguest
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -64,7 +77,13 @@
                         <div class="col-md-12">
                             <h1 class="m-b-20"><strong>Welcome To <br> Cost'an</strong></h1>
                             <p class="m-b-40">Cari kos idaman anda sekarang!</p>
-                            <p><a class="btn hvr-hover" href="#">Cari Kos Anda</a></p>
+                            <p>
+                                @guest
+                                    <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
+                                @else
+                                    <a class="btn hvr-hover" href="{{ route('login') }}">Cari Kos Anda</a>
+                                @endguest
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -76,6 +95,7 @@
         </div>
     </div>
     <!-- End Slider -->
+
 
     <!-- Start Categories  -->
     <div class="categories-shop">
@@ -311,6 +331,25 @@
         </div>
     </div>
     <!-- End Blog  -->
+
+
+    <!-- Register and Login Buttons (if not authenticated) -->
+    @guest
+        <div class="auth-buttons">
+            <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
+            <a href="{{ route('register') }}" class="btn btn-secondary">Register</a>
+        </div>
+    @else
+        <!-- If authenticated, show user profile management -->
+        <div class="user-profile">
+            <p>Welcome, {{ Auth::user()->name }}!</p>
+            <a href="{{ route('profile_management.edit') }}" class="btn btn-primary">Edit Profile</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+        </div>
+    @endguest
 
 
     <!-- Start Instagram Feed  -->
