@@ -26,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/kos/populer', [KosController::class, 'populer'])->name('kos.populer');
+    Route::get('/kos/{id}', [KosController::class, 'show'])->name('kos.show');
 });
 
 Route::get('/redirect',[HomeController::class,"redirect"]);
