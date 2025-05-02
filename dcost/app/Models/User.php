@@ -32,11 +32,10 @@ class User extends Authenticatable
         'address',
         'profile_photo_path',
         'search_preferences',
-        'price_min',
-        'price_max',
+        'price_range',
         'preferred_location',
         'preferred_kos_type',
-        'status',
+        'preferred_facilities',
         'password',
     ];
 
@@ -59,9 +58,8 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'search_preferences' => 'array', // JSON jadi array otomatis
-        'price_min' => 'decimal:2',
-        'price_max' => 'decimal:2',
+        'search_preferences' => 'array', 
+        'price_range' => 'decimal:2',
     ];
 
 }

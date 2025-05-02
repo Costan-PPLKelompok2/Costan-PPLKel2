@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
-
 
 class ProfileController extends Controller
 {
@@ -19,41 +15,32 @@ class ProfileController extends Controller
         return view('profile.show', compact('user'));
     }
 
-    /**
-     * Menampilkan form edit profil pengguna.
-     */
     public function edit()
     {
         $user = Auth::user();
         return view('profile.edit', compact('user'));
     }
 
-    // Menampilkan form upload foto
     public function editPhoto()
     {
-        return view('profile.edit');  // Halaman form upload foto
+        $user = Auth::user();
+        return view('profile.edit-photo', compact('user')); 
     }
 
-    // Mengupdate foto profil
     public function updatePhoto(Request $request)
     {
-        // Validasi input file
         $request->validate([
             'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Ambil user yang sedang login
-        $user = auth()->user();
+        $user = Auth::user();
 
-        // Jika user sebelumnya punya foto, hapus foto lama
         if ($user->profile_photo_path) {
             Storage::disk('public')->delete($user->profile_photo_path);
         }
 
-        // Upload foto baru dan simpan path-nya
         $path = $request->file('photo')->store('profile-photos', 'public');
 
-        // Update foto profil di database
         $user->update([
             'profile_photo_path' => $path,
         ]);
@@ -67,20 +54,19 @@ class ProfileController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'phone_number' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
-            'profile_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'search_preferences' => 'nullable|array',
-            'price_min' => 'nullable|numeric',
-            'price_max' => 'nullable|numeric',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'preferred_location' => 'nullable|string|max:255',
+            'price' => 'nullable|numeric',
             'preferred_kos_type' => 'nullable|string|max:255',
+            'preferred_facilities' => 'nullable|array',
         ]);
 
         // Upload foto profil kalau ada
         if ($request->hasFile('profile_photo')) {
             if ($user->profile_photo_path) {
-                Storage::delete($user->profile_photo_path);
+                Storage::disk('public')->delete($user->profile_photo_path);
             }
             $path = $request->file('profile_photo')->store('profile-photos', 'public');
             $user->profile_photo_path = $path;
@@ -89,21 +75,18 @@ class ProfileController extends Controller
         // Update data user
         $user->update([
             'name' => $request->name,
-            'phone_number' => $request->phone_number,
+            'phone' => $request->phone,
             'address' => $request->address,
-            'search_preferences' => $request->search_preferences,
-            'price_min' => $request->price_min,
-            'price_max' => $request->price_max,
             'preferred_location' => $request->preferred_location,
+            'price' => $request->price,
             'preferred_kos_type' => $request->preferred_kos_type,
+            'preferred_facilities' => $request->preferred_facilities,
+            'profile_photo_path' => $user->profile_photo_path,
         ]);
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
     }
 
-    /**
-     * Menghapus akun pengguna (soft delete).
-     */
     public function destroy()
     {
         $user = Auth::user();

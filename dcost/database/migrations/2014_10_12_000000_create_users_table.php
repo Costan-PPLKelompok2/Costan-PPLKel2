@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('phone_number')->nullable();
+            $table->string('phone')->nullable(); 
             $table->text('address')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
@@ -23,14 +23,13 @@ return new class extends Migration
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
             
-            // Preferensi pencarian
-            $table->json('search_preferences')->nullable();
-            $table->decimal('price_min', 12, 2)->nullable();
-            $table->decimal('price_max', 12, 2)->nullable();
-            $table->string('preferred_location')->nullable();
-            $table->string('preferred_kos_type')->nullable(); // campur/pria/wanita
+            // Menambahkan price sesuai dengan model
+            $table->decimal('price', 12, 2)->nullable(); // Menambahkan field price
             
-            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
+            // Preferensi pencarian sesuai model
+            $table->string('preferred_location')->nullable();
+            $table->string('preferred_kos_type')->nullable();
+            $table->json('preferred_facilities')->nullable();  
             $table->timestamps();
             $table->softDeletes();
         });

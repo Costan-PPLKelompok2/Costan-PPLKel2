@@ -6,19 +6,6 @@
     </x-slot>
 
     <div>
-        <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-
-            <!-- Menampilkan Foto Profil Pengguna -->
-            <div class="mt-4 flex justify-center">
-                <div class="relative">
-                    <!-- Display Profile Photo -->
-                    <div class="rounded-full border-4 border-indigo-500 overflow-hidden w-48 h-48">
-                        <img src="{{ Storage::url(auth()->user()->profile_photo_path) }}" alt="Profile Photo" class="w-full h-full object-cover">
-                    </div>
-                </div>
-            </div>
-
-
             <!-- Form untuk Update Foto Profil -->
             <div class="mt-10 sm:mt-0">
                 @include('profile.partials.profile-photo-form') <!-- Form Update Foto Profil -->

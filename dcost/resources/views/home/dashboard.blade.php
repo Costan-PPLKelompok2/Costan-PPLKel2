@@ -343,7 +343,7 @@
         <!-- If authenticated, show user profile management -->
         <div class="user-profile">
             <p>Welcome, {{ Auth::user()->name }}!</p>
-            <a href="{{ route('profile_management.edit') }}" class="btn btn-primary">Edit Profile</a>
+            <a href="{{ route('profile.edit') }}" class="btn btn-primary">Edit Profile</a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="btn btn-danger">Logout</button>
