@@ -1,13 +1,34 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Kos;
+use App\Models\KosView;
 use Illuminate\Http\Request;
-use App\Models\Kos; // pastikan model Kos sudah dibuat
-use Illuminate\Support\Facades\Auth;
 
 class KosController extends Controller
 {
+    public function populer()
+    {
+    $kosPopuler = Kos::with('pemilik')
+        ->withCount('views')
+        ->orderBy('views_count', 'desc')
+        ->take(10)
+        ->get();
+
+    return view('dashboard.populer', compact('kosPopuler'));
+    }
+    public function show($id)
+    {
+    $kos = Kos::findOrFail($id);
+
+    KosView::create([
+        'kos_id' => $kos->id,
+        'ip' => request()->ip(),
+    ]);
+
+    return view('dashboard.show', compact('kos'));
+    }
+
     // Menampilkan form tambah kos
     public function create()
     {
@@ -44,14 +65,14 @@ class KosController extends Controller
     // Tampilkan form edit
     public function edit($id)
     {
-        $kos = \App\Models\Kos::where('user_id', auth()->id())->findOrFail($id);
+        $kos = Kos::where('user_id', auth()->id())->findOrFail($id);
         return view('kos.edit', compact('kos'));
     }
 
     // Simpan hasil edit
     public function update(Request $request, $id)
     {
-        $kos = \App\Models\Kos::where('user_id', auth()->id())->findOrFail($id);
+        $kos = Kos::where('user_id', auth()->id())->findOrFail($id);
 
         $request->validate([
             'nama_kos' => 'required',
@@ -76,7 +97,7 @@ class KosController extends Controller
     // Hapus data kos
     public function destroy($id)
     {
-        $kos = \App\Models\Kos::where('user_id', auth()->id())->findOrFail($id);
+        $kos = Kos::where('user_id', auth()->id())->findOrFail($id);
         $kos->delete();
 
         return redirect()->route('kos.index')->with('success', 'Kos berhasil dihapus!');
@@ -86,7 +107,7 @@ class KosController extends Controller
     // Menampilkan di dashboard
     public function index()
     {
-        $kosList = \App\Models\Kos::where('user_id', auth()->id())->get();
+        $kosList = Kos::where('user_id', auth()->id())->get();
         return view('kos.index', compact('kosList'));
     }
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KosController;
+use App\Http\Controllers\PemilikController;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -19,10 +20,10 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/',[HomeController::class,"index"]);
+Route::get('/',[HomeController::class,"index"])->name('dashboard');
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return route('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
@@ -38,7 +39,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kos/populer', [KosController::class, 'populer'])->name('kos.populer');
     Route::get('/kos/{id}', [KosController::class, 'show'])->name('kos.show');
 });
-
-Route::get('/redirect',[HomeController::class,"redirect"]);
 
 require __DIR__.'/auth.php';
