@@ -51,62 +51,51 @@
     </div>
     <!-- End Top Search -->
 
-     <!-- Extended Search Bar -->
+    <!-- Extended Search Bar -->
     <div class="top-search bg-dark py-4">
-      <div class="container">
+    <div class="container">
         <form action="{{ route('kos.index') }}" method="GET">
-          <div class="row g-2 align-items-center">
-            <!-- Submit Button -->
+        <div class="row g-2 align-items-center">
             <div class="col-auto">
-              <button class="btn btn-outline-light" type="submit">
-                <i class="fa fa-search"></i>
-              </button>
+            <button class="btn btn-outline-light" type="submit"><i class="fa fa-search"></i></button>
             </div>
-            <!-- Keyword -->
-            <div class="col-md-3">
-              <input type="text" name="search" class="form-control" placeholder="Cari kos..." value="{{ request('search') }}">
+                <div class="col-md-3">
+                <input type="text" name="search" class="form-control" placeholder="Cari kos..." value="{{ request('search') }}">
+                </div>
+                <div class="col-md-3">
+                <input id="location-input" type="text" name="location" class="form-control" placeholder="Cari lokasi..." value="{{ request('location') }}">
+                <input type="hidden" id="loc_lat" name="loc_lat" value="{{ request('loc_lat') }}">
+                <input type="hidden" id="loc_lng" name="loc_lng" value="{{ request('loc_lng') }}">
+                </div>
+                <div class="col-md-2">
+                <input type="number" name="price_min" class="form-control" placeholder="Min Harga" value="{{ request('price_min') }}">
+                </div>
+                <div class="col-md-2">
+                <input type="number" name="price_max" class="form-control" placeholder="Max Harga" value="{{ request('price_max') }}">
+                </div>
+                <div class="col-md-3">
+                <select name="facilities[]" class="form-select" multiple title="Tahan Ctrl/Cmd untuk pilih banyak">
+                    @foreach($facilities as $f)
+                    <option value="{{ $f->id }}" {{ in_array($f->id, (array) request('facilities', [])) ? 'selected':'' }}>{{ $f->name }}</option>
+                    @endforeach
+                </select>
+                </div>
+                <div class="col-md-2">
+                <select name="radius" class="form-select">
+                    <option value="">Radius (km)</option>
+                    <option value="1" {{ request('radius')=='1'?'selected':'' }}>1 km</option>
+                    <option value="3" {{ request('radius')=='3'?'selected':'' }}>3 km</option>
+                    <option value="5" {{ request('radius')=='5'?'selected':'' }}>5 km</option>
+                    <option value="10" {{ request('radius')=='10'?'selected':'' }}>10 km</option>
+                </select>
+                </div>
+                <div class="col-auto">
+                <button type="button" class="btn btn-outline-light" onclick="window.location='{{ route('kos.index') }}'"><i class="fa fa-times"></i></button>
+                </div>
             </div>
-            <!-- Location Autocomplete -->
-            <div class="col-md-3">
-              <input id="location-input" type="text" name="location" class="form-control" placeholder="Cari lokasi..." value="{{ request('location') }}">
-              <input type="hidden" id="loc_lat" name="loc_lat" value="{{ request('loc_lat') }}">
-              <input type="hidden" id="loc_lng" name="loc_lng" value="{{ request('loc_lng') }}">
-            </div>
-            <!-- Price Min/Max -->
-            <div class="col-md-2">
-              <input type="number" name="price_min" class="form-control" placeholder="Min Harga" value="{{ request('price_min') }}">
-            </div>
-            <div class="col-md-2">
-              <input type="number" name="price_max" class="form-control" placeholder="Max Harga" value="{{ request('price_max') }}">
-            </div>
-            <!-- Facilities Multi-select -->
-            <div class="col-md-3">
-              <select name="facilities[]" class="form-select" multiple title="Tahan Ctrl/Cmd untuk pilih banyak">
-                @foreach($facilities as $f)
-                  <option value="{{ $f->id }}" {{ in_array($f->id, (array) request('facilities', [])) ? 'selected':'' }}>
-                    {{ $f->name }}
-                  </option>
-                @endforeach
-              </select>
-            </div>
-            <!-- Radius -->
-            <div class="col-md-2">
-              <select name="radius" class="form-select">
-                <option value="">Radius (km)</option>
-                <option value="1" {{ request('radius')=='1'?'selected':'' }}>1 km</option>
-                <option value="3" {{ request('radius')=='3'?'selected':'' }}>3 km</option>
-                <option value="5" {{ request('radius')=='5'?'selected':'' }}>5 km</option>
-                <option value="10" {{ request('radius')=='10'?'selected':'' }}>10 km</option>
-              </select>
-            </div>
-            <!-- Clear Filters -->
-            <div class="col-auto">
-              <button type="button" class="btn btn-outline-light" onclick="window.location='{{ route('kos.index') }}'"><i class="fa fa-times"></i></button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+            </form>
+        </div>
+        </div>
 
     <!-- Start Slider -->
     <div id="slides-shop" class="cover-slides">
@@ -307,6 +296,46 @@
         </div>
     </div>
     <!-- End Products  -->
+
+    <!-- Daftar Kos -->
+    <div class="products-box py-5">
+      <div class="container">
+        <div class="title-all text-center mb-4">
+          <h1>Daftar Kos</h1>
+          <p>Hasil pencarian berdasarkan kriteria Anda</p>
+        </div>
+        <div class="row">
+          @forelse($kosList as $kos)
+            <div class="col-lg-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <img src="{{ asset('storage/'.($kos->photo ?? $kos->image ?? 'default.jpg')) }}" class="card-img-top" alt="{{ $kos->nama_kos }}">
+                <div class="card-body">
+                  <h5 class="card-title">{{ $kos->nama_kos }}</h5>
+                  <p class="card-text">{{ Str::limit($kos->deskripsi, 80) }}</p>
+                  <ul class="list-unstyled mb-2">
+                    <li><strong>Alamat:</strong> {{ $kos->alamat }}</li>
+                    <li><strong>Harga:</strong> Rp {{ number_format($kos->harga) }}/bln</li>
+                    <li><strong>Fasilitas:</strong> {{ $kos->fasilitas }}</li>
+                    <li><strong>Status:</strong> {{ $kos->status_ketersediaan ? 'Tersedia' : 'Penuh' }}</li>
+                  </ul>
+                  @isset($kos->distance)
+                    <p class="small text-muted">Jarak: {{ round($kos->distance,2) }} km</p>
+                  @endisset
+                  <a href="{{ route('kos.show', $kos->id_kos) }}" class="btn btn-primary btn-sm">Detail</a>
+                </div>
+              </div>
+            </div>
+          @empty
+            <div class="col-12 text-center">
+              <p>Tidak ada kos ditemukan sesuai kriteria.</p>
+            </div>
+          @endforelse
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+          {{ $kosList->withQueryString()->links() }}
+        </div>
+      </div>
+    </div>
 
     <!-- Start Blog  -->
     <div class="latest-blog">
@@ -571,6 +600,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script src="{{ URL::asset('js/custom.js') }}"></script>
+    <a href="#" id="back-to-top" title="Back to top">&uarr;</a>
 
     <!-- Start copyright  -->
     <div class="footer-copyright">

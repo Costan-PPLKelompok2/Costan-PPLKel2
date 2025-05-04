@@ -2,18 +2,27 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Kos extends Model
 {
+    use HasFactory;
+
     protected $table = 'kos';
-    protected $primaryKey = 'id_kos';
+
     protected $fillable = [
+        'user_id',
         'nama_kos',
+        'deskripsi',
         'alamat',
         'harga',
         'fasilitas',
-        'deskripsi',
-        'status_ketersediaan',
+        'foto',
     ];
+
+    public function pemilik()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
