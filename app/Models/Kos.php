@@ -8,9 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Kos extends Model
 {
     use HasFactory;
-    public function views()
-{
-    return $this->hasMany(KosView::class);
-}
 
+    protected $table = 'kos';
+
+    protected $fillable = [
+        'user_id',
+        'nama_kos',
+        'deskripsi',
+        'alamat',
+        'harga',
+        'fasilitas',
+        'foto',
+    ];
+
+    public function pemilik()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
