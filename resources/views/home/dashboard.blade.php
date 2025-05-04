@@ -24,78 +24,14 @@
 
     <!-- Start Top Search -->
     <div class="top-search">
-    <div class="container">
-        <form action="{{ route('home.dashboard') }}" method="GET">
-        <div class="input-group">
-            <!-- Tombol submit -->
-            <button class="btn input-group-text" type="submit">
-            <i class="fa fa-search"></i>
-            </button>
-
-            <!-- Input dengan name -->
-            <input 
-            type="text" 
-            name="search" 
-            class="form-control" 
-            placeholder="Cari kos..." 
-            value="{{ request('search') }}"
-            >
-
-            <!-- Tombol clear (opsional, butuh JS) -->
-            <span class="input-group-text close-search">
-            <i class="fa fa-times"></i>
-            </span>
-        </div>
-        </form>
+    <div class="container text-center py-3">
+        <a href="{{ route('kos.search') }}" class="btn btn-primary">
+        <i class="fa fa-search"></i> Cari Kos Lengkap
+        </a>
     </div>
     </div>
+
     <!-- End Top Search -->
-
-    <!-- Extended Search Bar -->
-    <div class="top-search bg-dark py-4">
-    <div class="container">
-        <form action="{{ route('kos.index') }}" method="GET">
-        <div class="row g-2 align-items-center">
-            <div class="col-auto">
-            <button class="btn btn-outline-light" type="submit"><i class="fa fa-search"></i></button>
-            </div>
-                <div class="col-md-3">
-                <input type="text" name="search" class="form-control" placeholder="Cari kos..." value="{{ request('search') }}">
-                </div>
-                <div class="col-md-3">
-                <input id="location-input" type="text" name="location" class="form-control" placeholder="Cari lokasi..." value="{{ request('location') }}">
-                <input type="hidden" id="loc_lat" name="loc_lat" value="{{ request('loc_lat') }}">
-                <input type="hidden" id="loc_lng" name="loc_lng" value="{{ request('loc_lng') }}">
-                </div>
-                <div class="col-md-2">
-                <input type="number" name="price_min" class="form-control" placeholder="Min Harga" value="{{ request('price_min') }}">
-                </div>
-                <div class="col-md-2">
-                <input type="number" name="price_max" class="form-control" placeholder="Max Harga" value="{{ request('price_max') }}">
-                </div>
-                <div class="col-md-3">
-                <select name="facilities[]" class="form-select" multiple title="Tahan Ctrl/Cmd untuk pilih banyak">
-                    @foreach($facilities as $f)
-                    <option value="{{ $f->id }}" {{ in_array($f->id, (array) request('facilities', [])) ? 'selected':'' }}>{{ $f->name }}</option>
-                    @endforeach
-                </select>
-                </div>
-                <div class="col-md-2">
-                <select name="radius" class="form-select">
-                    <option value="">Radius (km)</option>
-                    <option value="1" {{ request('radius')=='1'?'selected':'' }}>1 km</option>
-                    <option value="3" {{ request('radius')=='3'?'selected':'' }}>3 km</option>
-                    <option value="5" {{ request('radius')=='5'?'selected':'' }}>5 km</option>
-                    <option value="10" {{ request('radius')=='10'?'selected':'' }}>10 km</option>
-                </select>
-                </div>
-                <div class="col-auto">
-                <button type="button" class="btn btn-outline-light" onclick="window.location='{{ route('kos.index') }}'"><i class="fa fa-times"></i></button>
-                </div>
-            </div>
-            </form>
-        </div>
-        </div>
 
     <!-- Start Slider -->
     <div id="slides-shop" class="cover-slides">

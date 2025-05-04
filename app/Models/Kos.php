@@ -19,8 +19,19 @@ class Kos extends Model
         'harga',
         'fasilitas',
         'foto',
+        'status_ketersediaan',
     ];
 
+    /**
+     * Cast status_ketersediaan into boolean (1 = available, 0 = full)
+     */
+    protected $casts = [
+        'status_ketersediaan' => 'boolean',
+    ];
+
+    /**
+     * Pemilik kos (user relationship)
+     */
     public function pemilik()
     {
         return $this->belongsTo(User::class, 'user_id');

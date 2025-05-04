@@ -10,54 +10,98 @@ class KosController extends Controller
 {
     public function __construct()
     {
-        // Hanya index() dan show() yang boleh diakses publik
-        $this->middleware('auth')->except(['index', 'show']);
+        // everything except index/show/search requires login
+        $this->middleware('auth')->except(['index','show','search']);
     }
 
     /**
-     * 1. Daftar publik: search/filter global
+     * Public landing + simple keyword filter
      */
     public function index(Request $request)
     {
         $query = Kos::query();
 
-        // keyword search
         if ($request->filled('search')) {
             $kw = $request->search;
-            $query->where(fn($q) =>
+            $query->where(function($q) use ($kw) {
                 $q->where('nama_kos','like',"%{$kw}%")
                   ->orWhere('alamat','like',"%{$kw}%")
-                  ->orWhere('fasilitas','like',"%{$kw}%")
-            );
+                  ->orWhere('fasilitas','like',"%{$kw}%");
+            });
         }
 
-        // harga
         if ($request->filled('price_min') && $request->filled('price_max')) {
             $query->whereBetween('harga', [
                 $request->price_min, $request->price_max
             ]);
         }
 
-        // fasilitas substring
         if ($request->filled('fasilitas')) {
             $query->where('fasilitas','like','%'.$request->fasilitas.'%');
         }
 
-        // status
-        if ($request->filled('status_ketersediaan')) {
-            $query->where('status_ketersediaan',$request->status_ketersediaan);
+        $kosList = $query->paginate(12)->withQueryString();
+        return view('home.dashboard', compact('kosList'));
+    }
+
+    /**
+     * Public: full filter + search page
+     */
+    public function search(Request $request)
+    {
+        // 1) build a unique list of facility names from your CSV column
+        $raw = Kos::pluck('fasilitas')->toArray();
+        $set = [];
+        foreach ($raw as $csv) {
+            foreach (explode(',', $csv) as $name) {
+                $n = trim($name);
+                if ($n !== '' && ! isset($set[$n])) {
+                    $set[$n] = true;
+                }
+            }
+        }
+        // turn into simple [ { id: name, name: name }, … ]
+        $facilities = [];
+        foreach (array_keys($set) as $name) {
+            $facilities[] = (object)[ 'id' => $name, 'name' => $name ];
         }
 
-        // radius ke kampus (opsional, butuh kolom lat/lng + config)
-        if ($request->filled('loc_lat') && $request->filled('loc_lng') && $request->filled('radius')) {
+        // 2) build the query
+        $query = Kos::query();
+
+        if ($request->filled('search')) {
+            $kw = $request->search;
+            $query->where(function($q) use ($kw) {
+                $q->where('nama_kos','like',"%{$kw}%")
+                  ->orWhere('alamat','like',"%{$kw}%")
+                  ->orWhere('fasilitas','like',"%{$kw}%");
+            });
+        }
+
+        if ($request->filled('price_min') && $request->filled('price_max')) {
+            $query->whereBetween('harga', [
+                $request->price_min, $request->price_max
+            ]);
+        }
+
+        if ($request->filled('facilities')) {
+            $query->where(function($q) use ($request) {
+                foreach ((array)$request->facilities as $fac) {
+                    $q->orWhere('fasilitas','like',"%{$fac}%");
+                }
+            });
+        }
+
+        // optional: geolocation + radius (needs latitude & longitude columns)
+        if ($request->filled('loc_lat','loc_lng','radius')) {
             $lat    = $request->loc_lat;
             $lng    = $request->loc_lng;
             $radius = (float)$request->radius;
             $haversine = "(6371 * acos(
-                cos(radians(?)) 
-              * cos(radians(latitude)) 
-              * cos(radians(longitude) - radians(?)) 
-              + sin(radians(?)) 
+                cos(radians(?))
+              * cos(radians(latitude))
+              * cos(radians(longitude) - radians(?))
+              + sin(radians(?))
               * sin(radians(latitude))
             ))";
             $query->selectRaw("kos.*, {$haversine} AS distance", [$lat,$lng,$lat])
@@ -65,13 +109,12 @@ class KosController extends Controller
                   ->orderBy('distance');
         }
 
-        // paginate
-        $kosList    = $query->paginate(12)->withQueryString();
-        return view('home.dashboard', compact('kosList'));
+        $kosList = $query->paginate(12)->withQueryString();
+        return view('kos.search', compact('kosList','facilities'));
     }
 
     /**
-     * 2. Detail publik
+     * Public: single kos detail
      */
     public function show($id_kos)
     {
@@ -80,18 +123,18 @@ class KosController extends Controller
     }
 
     /**
-     * 3. Daftar milik user
+     * Authenticated user only: manage listing
      */
     public function manage()
     {
-        $kosList = Kos::where('user_id', Auth::id())
+        $kosList = Kos::where('user_id',Auth::id())
                       ->latest()
                       ->paginate(10);
         return view('kos.manage', compact('kosList'));
     }
 
     /**
-     * 4. Form tambah
+     * Authenticated: form to create
      */
     public function create()
     {
@@ -99,17 +142,17 @@ class KosController extends Controller
     }
 
     /**
-     * 5. Simpan baru (simpan user_id & foto)
+     * Authenticated: store new kos
      */
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nama_kos' => 'required|string|max:255',
-            'deskripsi'=> 'required|string',
-            'alamat'   => 'required|string|max:255',
-            'harga'    => 'required|numeric',
-            'fasilitas'=> 'required|string',
-            'foto'     => 'nullable|image|max:2048',
+            'nama_kos'            => 'required|string|max:255',
+            'deskripsi'           => 'required|string',
+            'alamat'              => 'required|string|max:255',
+            'harga'               => 'required|numeric',
+            'fasilitas'           => 'required|string',
+            'foto'                => 'nullable|image|max:2048',
             'status_ketersediaan' => 'required|in:0,1',
         ]);
 
@@ -125,30 +168,30 @@ class KosController extends Controller
     }
 
     /**
-     * 6. Form edit (hanya milik sendiri)
+     * Authenticated: form to edit
      */
     public function edit($id_kos)
     {
-        $kos = Kos::where('user_id', Auth::id())
+        $kos = Kos::where('user_id',Auth::id())
                   ->findOrFail($id_kos);
         return view('kos.edit', compact('kos'));
     }
 
     /**
-     * 7. Update (hanya milik sendiri)
+     * Authenticated: update existing kos
      */
     public function update(Request $request, $id_kos)
     {
-        $kos = Kos::where('user_id', Auth::id())
+        $kos = Kos::where('user_id',Auth::id())
                   ->findOrFail($id_kos);
 
         $data = $request->validate([
-            'nama_kos' => 'required|string|max:255',
-            'deskripsi'=> 'required|string',
-            'alamat'   => 'required|string|max:255',
-            'harga'    => 'required|numeric',
-            'fasilitas'=> 'required|string',
-            'foto'     => 'nullable|image|max:2048',
+            'nama_kos'            => 'required|string|max:255',
+            'deskripsi'           => 'required|string',
+            'alamat'              => 'required|string|max:255',
+            'harga'               => 'required|numeric',
+            'fasilitas'           => 'required|string',
+            'foto'                => 'nullable|image|max:2048',
             'status_ketersediaan' => 'required|in:0,1',
         ]);
 
@@ -163,11 +206,11 @@ class KosController extends Controller
     }
 
     /**
-     * 8. Hapus (hanya milik sendiri)
+     * Authenticated: delete kos
      */
     public function destroy($id_kos)
     {
-        $kos = Kos::where('user_id', Auth::id())
+        $kos = Kos::where('user_id',Auth::id())
                   ->findOrFail($id_kos);
         $kos->delete();
 

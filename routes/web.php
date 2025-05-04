@@ -16,56 +16,46 @@ use App\Http\Controllers\KosController;
 |
 */
 
-// 1. Landing page: daftar kos publik dengan filter
+// 1. Landing page & public kos listing (halaman utama)
 Route::get('/', [KosController::class, 'index'])
      ->name('home.dashboard');
 
-// 2. Dashboard (auth & verified): sama menampilkan daftar kos publik
+// 2. Daftar umum kos (kos.index)
+Route::get('/kos', [KosController::class, 'index'])
+     ->name('kos.index');
+
+// 3. Halaman khusus pencarian dengan filter lengkap
+Route::get('/kos/search', [KosController::class, 'search'])
+     ->name('kos.search');
+
+// 4. Detail kos publik (harus setelah /kos/search)
+Route::get('/kos/{id_kos}', [KosController::class, 'show'])
+     ->name('kos.show');
+
+// 5. Dashboard protected (auth & verified)
 Route::get('/dashboard', [KosController::class, 'index'])
      ->middleware(['auth','verified'])
      ->name('dashboard');
 
-// 3. Profil user (CRUD profile)
+// 6. Rute-rute yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
+    // Profil user
     Route::get('/profile',   [ProfileController::class, 'edit'])   ->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile', [ProfileController::class, 'update']) ->name('profile.update');
     Route::delete('/profile',[ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Manajemen kos milik user
+    Route::get('/my-kos',              [KosController::class, 'manage']) ->name('kos.manage');
+    Route::get('/kos/create',          [KosController::class, 'create']) ->name('kos.create');
+    Route::post('/kos',                [KosController::class, 'store'])  ->name('kos.store');
+    Route::get('/kos/{id_kos}/edit',   [KosController::class, 'edit'])   ->name('kos.edit');
+    Route::put('/kos/{id_kos}',        [KosController::class, 'update']) ->name('kos.update');
+    Route::delete('/kos/{id_kos}',     [KosController::class, 'destroy'])->name('kos.destroy');
 });
 
-// 4. Kos management (hanya untuk pemilik): daftar milik user, tambah, edit, hapus
-Route::middleware(['auth'])->group(function () {
-    // Daftar kos milik user
-    Route::get('/my-kos', [KosController::class, 'manage'])
-         ->name('kos.manage');
-
-    // CRUD milik user
-    Route::get('/kos/create',        [KosController::class, 'create'])  ->name('kos.create');
-    Route::post('/kos',              [KosController::class, 'store'])   ->name('kos.store');
-    Route::get('/kos/{id_kos}/edit', [KosController::class, 'edit'])    ->name('kos.edit');
-    Route::put('/kos/{id_kos}',      [KosController::class, 'update'])  ->name('kos.update');
-    Route::delete('/kos/{id_kos}',   [KosController::class, 'destroy']) ->name('kos.destroy');
-});
-
-// 5. Detail kos publik
-Route::get('/kos/{id_kos}', [KosController::class, 'show'])
-     ->name('kos.show');
-
- Route::middleware(['auth'])->group(function () {
-     Route::get('/kos/create', [KosController::class, 'create'])->name('kos.create');
-     Route::post('/kos', [KosController::class, 'store'])->name('kos.store');
-     Route::get('/kos/{id}/edit', [KosController::class, 'edit'])->name('kos.edit');
-     Route::put('/kos/{id}', [KosController::class, 'update'])->name('kos.update');
-     Route::delete('/kos/{id}', [KosController::class, 'destroy'])->name('kos.destroy');
-     Route::get('/kos', [KosController::class, 'index'])->name('kos.index');
-     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-      });
-      
-
-// 6. Redirect helper (jika masih perlu)
+// 7. (Optional) Redirect helper
 Route::get('/redirect', [HomeController::class, 'redirect'])
      ->name('redirect');
 
-// 7. Auth scaffolding (login, register, dll.)
+// 8. Auth scaffolding (login, register, dll.)
 require __DIR__ . '/auth.php';
