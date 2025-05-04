@@ -26,11 +26,12 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Phone</th>
-                            <th>Location</th>
-                            <th>Price Range</th>
-                            <th>Room Type</th>
-                            <th>Facilities</th>
+                            <th>Phone Number</th>
+                            <th>Address</th>
+                            <th>Preferred Location</th>
+                            <th>Preferred Price Range</th>
+                            <th>Preferred Room Type</th>
+                            <th>Preferred Facilities</th>
                             <th width="150">Actions</th>
                         </tr>
                     </thead>
@@ -42,6 +43,7 @@
                                     <a href="mailto:{{ $profile->email }}">{{ $profile->email }}</a>
                                 </td>
                                 <td>{{ $profile->phone ?: '-' }}</td>
+                                <td>{{ $profile->address ?: '-' }}</td>
                                 <td>{{ $profile->location ?: '-' }}</td>
                                 <td>{{ $profile->price_range ?: '-' }}</td>
                                 <td>{{ $profile->room_type ?: '-' }}</td>

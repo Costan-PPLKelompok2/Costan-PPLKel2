@@ -32,7 +32,7 @@
                             <div class="mb-4">
                                 <h3 class="h5 border-bottom pb-2">Contact Information</h3>
                                 <div class="mb-2">
-                                    <strong><i class="fas fa-phone me-2"></i>Phone:</strong> 
+                                    <strong><i class="fas fa-phone me-2"></i>Phone Number:</strong> 
                                     {{ $users_profile->phone ?: 'Not provided' }}
                                 </div>
                                 <div class="mb-2">
