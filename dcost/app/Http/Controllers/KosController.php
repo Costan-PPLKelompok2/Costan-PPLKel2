@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Kos; // pastikan model Kos sudah dibuat
+use App\Models\Kos;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class KosController extends Controller
 {
@@ -82,12 +83,46 @@ class KosController extends Controller
         return redirect()->route('kos.index')->with('success', 'Kos berhasil dihapus!');
     }
 
-
     // Menampilkan di dashboard
-    public function index()
+    public function index(Request $request)
     {
-        $kosList = \App\Models\Kos::where('user_id', auth()->id())->get();
-        return view('kos.index', compact('kosList'));
-    }
+        $user_id = auth()->id();
 
+        // Mengambil data kos untuk user yang sedang login
+        $kosList = Kos::where('user_id', $user_id);
+
+        // Statistik
+        $totalKos = Kos::where('user_id', $user_id)->count();
+        $totalPenghuni = DB::table('penghuni') // Sesuaikan dengan nama tabel penghuni Anda
+            ->whereIn('kos_id', function ($query) use ($user_id) {
+                $query->select('id')
+                    ->from('kos')
+                    ->where('user_id', $user_id);
+            })
+            ->count();
+
+        // Pencarian
+        $search = $request->input('search');
+        if ($search) {
+            $kosList->where(function ($query) use ($search) {
+                $query->where('nama_kos', 'like', '%' . $search . '%')
+                    ->orWhere('alamat', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Pengurutan
+        $sort = $request->input('sort'); // Ambil parameter 'sort' dari request
+        if ($sort === 'terbaru') {
+            $kosList->orderBy('created_at', 'desc');
+        } elseif ($sort === 'terlama') {
+            $kosList->orderBy('created_at', 'asc');
+        } else {
+            $kosList->orderBy('created_at', 'desc'); // Default: Terbaru
+        }
+
+        $kosList = $kosList->get();
+
+        // Mengirimkan variabel $kosList, $totalKos, dan $totalPenghuni ke view
+        return view('kos.index', compact('kosList', 'totalKos', 'totalPenghuni'));
+    }
 }
