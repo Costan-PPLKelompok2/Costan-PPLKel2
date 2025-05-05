@@ -64,10 +64,6 @@
     <!-- Start Blog  -->
     @include('home.blog')
     <!-- End Blog  -->
-
-    <!-- Start Populer -->
-    @include('dashboard.populer')
-    <!-- End Populer -->
      
     <!-- Start Instagram Feed  -->
     @include('home.feed')

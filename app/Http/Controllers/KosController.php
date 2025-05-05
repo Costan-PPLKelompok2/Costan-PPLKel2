@@ -4,29 +4,26 @@ namespace App\Http\Controllers;
 use App\Models\Kos;
 use App\Models\KosView;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class KosController extends Controller
 {
-    public function populer()
+    public function popular()
     {
-    $kosPopuler = Kos::with('pemilik')
-        ->withCount('views')
-        ->orderBy('views_count', 'desc')
-        ->take(10)
-        ->get();
+        // Ambil kos berdasarkan jumlah views terbanyak
+        $popularKos = Kos::orderBy('views', 'desc')->take(10)->get();
 
-    return view('dashboard.populer', compact('kosPopuler'));
+        return view('popular', compact('popularKos'));
     }
     public function show($id)
     {
-    $kos = Kos::findOrFail($id);
+        $kos = Kos::findOrFail($id);
 
-    KosView::create([
-        'kos_id' => $kos->id,
-        'ip' => request()->ip(),
-    ]);
+        // Tambahkan jumlah views
+        $kos->increment('views');
 
-    return view('dashboard.show', compact('kos'));
+        return view('kos.show', compact('kos'));
     }
 
     // Menampilkan form tambah kos
@@ -103,12 +100,46 @@ class KosController extends Controller
         return redirect()->route('kos.index')->with('success', 'Kos berhasil dihapus!');
     }
 
-
     // Menampilkan di dashboard
-    public function index()
+    public function index(Request $request)
     {
-        $kosList = Kos::where('user_id', auth()->id())->get();
-        return view('kos.index', compact('kosList'));
-    }
+        $user_id = auth()->id();
 
+        // Mengambil data kos untuk user yang sedang login
+        $kosList = Kos::where('user_id', $user_id);
+
+        // Statistik
+        $totalKos = Kos::where('user_id', $user_id)->count();
+        $totalPenghuni = DB::table('penghuni') // Sesuaikan dengan nama tabel penghuni Anda
+            ->whereIn('kos_id', function ($query) use ($user_id) {
+                $query->select('id')
+                    ->from('kos')
+                    ->where('user_id', $user_id);
+            })
+            ->count();
+
+        // Pencarian
+        $search = $request->input('search');
+        if ($search) {
+            $kosList->where(function ($query) use ($search) {
+                $query->where('nama_kos', 'like', '%' . $search . '%')
+                    ->orWhere('alamat', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Pengurutan
+        $sort = $request->input('sort'); // Ambil parameter 'sort' dari request
+        if ($sort === 'terbaru') {
+            $kosList->orderBy('created_at', 'desc');
+        } elseif ($sort === 'terlama') {
+            $kosList->orderBy('created_at', 'asc');
+        } else {
+            $kosList->orderBy('created_at', 'desc'); // Default: Terbaru
+        }
+
+        $kosList = $kosList->get();
+
+        // Mengirimkan variabel $kosList, $totalKos, dan $totalPenghuni ke view
+        return view('kos.index', compact('kosList', 'totalKos', 'totalPenghuni'));
+    }
 }
