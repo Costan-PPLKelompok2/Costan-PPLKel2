@@ -125,153 +125,203 @@
 	</div>
    
 
-        <!-- List of Kos -->
-        <div class="products-box py-5">
-            <div class="container">
-                <div class="title-all text-center mb-4">
-                    <h1>Daftar Kos</h1>
-                    <p>Hasil pencarian berdasarkan kriteria Anda</p>
-                </div>
-                <div class="row">
-                    @forelse($kosList as $kos)
-                        <div class="col-lg-3 col-md-6 mb-4">
-                            <div class="card h-100">
-                                <img src="{{ asset('storage/'.($kos->image ?? 'default.jpg')) }}" class="card-img-top" alt="{{ $kos->nama_kos }}">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $kos->nama_kos }}</h5>
-                                    <p class="card-text">{{ Str::limit($kos->deskripsi, 80) }}</p>
-                                    <ul class="list-unstyled mb-2">
-                                        <li><strong>Alamat:</strong> {{ $kos->alamat }}</li>
-                                        <li><strong>Harga:</strong> Rp {{ number_format($kos->harga) }}/bln</li>
-                                        <li><strong>Fasilitas:</strong> {{ $kos->fasilitas }}</li>
-                                        <li><strong>Status:</strong> {{ $kos->status_ketersediaan ? 'Tersedia' : 'Penuh' }}</li>
-                                    </ul>
-                                    @isset($kos->distance)
-                                        <p class="small text-muted">Jarak: {{ round($kos->distance,2) }} km</p>
-                                    @endisset
-                                    <a href="{{ route('kos.show', $kos->id_kos) }}" class="btn btn-primary btn-sm">Detail</a>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="col-12 text-center">
-                            <p>Tidak ada kos ditemukan sesuai kriteria.</p>
-                        </div>
-                    @endforelse
-                </div>
-                <div class="d-flex justify-content-center mt-4">
-                    {{ $kosList->withQueryString()->links() }}
-                </div>
-            </div>
-        </div>
-
-    <!-- Start Products  -->
-    <div class="products-box">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="title-all text-center">
-                        <h1>Fruits & Vegetables</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet lacus enim.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="special-menu text-center">
-                        <div class="button-group filter-button-group">
-                            <button class="active" data-filter="*">All</button>
-                            <button data-filter=".top-featured">Top featured</button>
-                            <button data-filter=".best-seller">Best seller</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                @forelse($kosList as $kos)
-                    <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="card h-100">
-                        {{-- paket null-coalescing dengan benar --}}
-                        <img src="{{ asset('storage/'.($kos->image ?? 'default.jpg')) }}"
-                            class="card-img-top"
-                            alt="{{ $kos->nama_kos }}">
-
-                        <div class="card-body">
-                        <h5 class="card-title">{{ $kos->nama_kos }}</h5>
-                        <p class="card-text">{{ $kos->alamat }}</p>
-                        <p class="card-text">Rp {{ number_format($kos->harga) }}/bln</p>
-                        <p class="card-text">Fasilitas: {{ $kos->fasilitas }}</p>
-                        <p class="card-text">
-                            Status: {{ $kos->status_ketersediaan ? 'Tersedia' : 'Penuh' }}
-                        </p>
-
-                        @isset($kos->distance)
-                            <p class="small text-muted">
-                            Jarak: {{ round($kos->distance, 2) }} km
-                            </p>
-                        @endisset
-
-                        <a href="{{ route('kos.show', ['id_kos' => $kos->id_kos]) }}"
-                            class="btn btn-sm btn-outline-primary">
-                            Detail
-                        </a>
-                        </div>
-                    </div>
-                    </div>
-                @empty
-                    <div class="col-12">
-                    <p class="text-center">Kos tidak ditemukan untuk kriteria ini.</p>
-                    </div>
-                @endforelse
-                </div>
-
-                <div class="d-flex justify-content-center mt-4">
-                {{ $kosList->withQueryString()->links() }}
-                </div>
-
-        </div>
-    </div>
-    <!-- End Products  -->
-
-    <!-- Daftar Kos -->
+    {{-- Daftar Kos --}}
     <div class="products-box py-5">
-      <div class="container">
+    <div class="container">
         <div class="title-all text-center mb-4">
-          <h1>Daftar Kos</h1>
-          <p>Hasil pencarian berdasarkan kriteria Anda</p>
+        <h1>Daftar Kos</h1>
+        <p>Hasil pencarian berdasarkan kriteria Anda</p>
         </div>
         <div class="row">
-          @forelse($kosList as $kos)
+        @forelse($kosList as $kos)
             <div class="col-lg-3 col-md-6 mb-4">
-              <div class="card h-100">
-                <img src="{{ asset('storage/'.($kos->photo ?? $kos->image ?? 'default.jpg')) }}" class="card-img-top" alt="{{ $kos->nama_kos }}">
-                <div class="card-body">
-                  <h5 class="card-title">{{ $kos->nama_kos }}</h5>
-                  <p class="card-text">{{ Str::limit($kos->deskripsi, 80) }}</p>
-                  <ul class="list-unstyled mb-2">
+            <div class="card h-100">
+                <img
+                src="{{ $kos->foto
+                        ? asset('storage/'.$kos->foto)
+                        : asset('images/default.jpg') }}"
+                class="card-img-top"
+                alt="{{ $kos->nama_kos }}"
+                >
+                <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ $kos->nama_kos }}</h5>
+                <p class="card-text mb-2">{{ Str::limit($kos->deskripsi, 80) }}</p>
+                <ul class="list-unstyled mb-3">
                     <li><strong>Alamat:</strong> {{ $kos->alamat }}</li>
                     <li><strong>Harga:</strong> Rp {{ number_format($kos->harga) }}/bln</li>
                     <li><strong>Fasilitas:</strong> {{ $kos->fasilitas }}</li>
-                    <li><strong>Status:</strong> {{ $kos->status_ketersediaan ? 'Tersedia' : 'Penuh' }}</li>
-                  </ul>
-                  @isset($kos->distance)
-                    <p class="small text-muted">Jarak: {{ round($kos->distance,2) }} km</p>
-                  @endisset
-                  <a href="{{ route('kos.show', $kos->id_kos) }}" class="btn btn-primary btn-sm">Detail</a>
+                    <li>
+                    <strong>Status:</strong>
+                    @if($kos->status_ketersediaan)
+                        <span class="badge bg-success">Tersedia</span>
+                    @else
+                        <span class="badge bg-danger">Penuh</span>
+                    @endif
+                    </li>
+                </ul>
+                <a
+                    href="{{ route('kos.show', ['id_kos' => $kos->id]) }}"
+                    class="mt-auto btn btn-primary btn-sm"
+                >
+                    Detail
+                </a>
                 </div>
-              </div>
             </div>
-          @empty
+            </div>
+        @empty
             <div class="col-12 text-center">
-              <p>Tidak ada kos ditemukan sesuai kriteria.</p>
+            <p>Tidak ada kos ditemukan sesuai kriteria.</p>
             </div>
-          @endforelse
+        @endforelse
         </div>
+
         <div class="d-flex justify-content-center mt-4">
-          {{ $kosList->withQueryString()->links() }}
+        {{ $kosList->withQueryString()->links() }}
         </div>
-      </div>
     </div>
+    </div>
+
+    <!-- Start Products  -->
+    <div class="products-box">
+    <div class="container">
+        <div class="row">
+        <div class="col-lg-12">
+            <div class="title-all text-center">
+            <h1>Fruits & Vegetables</h1>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet lacus enim.</p>
+            </div>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col-lg-12">
+            <div class="special-menu text-center">
+            <div class="button-group filter-button-group">
+                <button class="active" data-filter="*">All</button>
+                <button data-filter=".top-featured">Top featured</button>
+                <button data-filter=".best-seller">Best seller</button>
+            </div>
+            </div>
+        </div>
+        </div>
+        <div class="row">
+        @forelse($kosList as $kos)
+            <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+                {{-- photo fallback --}}
+                <img
+                src="{{ $kos->foto
+                        ? asset('storage/'.$kos->foto)
+                        : asset('images/default.jpg') }}"
+                class="card-img-top"
+                alt="{{ $kos->nama_kos }}"
+                >
+
+                <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ $kos->nama_kos }}</h5>
+                <p class="card-text">{{ Str::limit($kos->alamat, 50) }}</p>
+                <p class="card-text mb-2">Rp {{ number_format($kos->harga) }}/bln</p>
+                <p class="card-text mb-3">Fasilitas: {{ $kos->fasilitas }}</p>
+                <p class="card-text mb-3">
+                    Status:
+                    @if($kos->status_ketersediaan)
+                    <span class="badge bg-success">Tersedia</span>
+                    @else
+                    <span class="badge bg-danger">Penuh</span>
+                    @endif
+                </p>
+
+                @isset($kos->distance)
+                    <p class="small text-muted mb-3">Jarak: {{ round($kos->distance, 2) }} km</p>
+                @endisset
+
+                <a
+                    href="{{ route('kos.show', $kos->id) }}"
+                    class="mt-auto btn btn-primary btn-sm"
+                >
+                    Detail
+                </a>
+                </div>
+            </div>
+            </div>
+        @empty
+            <div class="col-12">
+            <p class="text-center">Kos tidak ditemukan untuk kriteria ini.</p>
+            </div>
+        @endforelse
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+        {{ $kosList->withQueryString()->links() }}
+        </div>
+    </div>
+    </div>
+
+    <!-- End Products  -->
+
+    {{-- resources/views/home/dashboard.blade.php (or wherever) --}}
+
+    <!-- Daftar Kos -->
+    <div class="products-box py-5">
+    <div class="container">
+        <div class="title-all text-center mb-4">
+        <h1>Daftar Kos</h1>
+        <p>Hasil pencarian berdasarkan kriteria Anda</p>
+        </div>
+        <div class="row">
+        @forelse($kosList as $kos)
+            <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+                <img
+                src="{{ $kos->foto
+                        ? asset('storage/'.$kos->foto)
+                        : asset('images/default.jpg') }}"
+                class="card-img-top"
+                alt="{{ $kos->nama_kos }}"
+                >
+                <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ $kos->nama_kos }}</h5>
+                <p class="card-text mb-2">{{ Str::limit($kos->deskripsi, 80) }}</p>
+                <ul class="list-unstyled mb-3">
+                    <li><strong>Alamat:</strong> {{ $kos->alamat }}</li>
+                    <li><strong>Harga:</strong> Rp {{ number_format($kos->harga) }}/bln</li>
+                    <li><strong>Fasilitas:</strong> {{ $kos->fasilitas }}</li>
+                    <li>
+                    <strong>Status:</strong>
+                    @if($kos->status_ketersediaan)
+                        <span class="badge bg-success">Tersedia</span>
+                    @else
+                        <span class="badge bg-danger">Penuh</span>
+                    @endif
+                    </li>
+                </ul>
+
+                @isset($kos->distance)
+                    <p class="small text-muted mb-3">Jarak: {{ round($kos->distance,2) }} km</p>
+                @endisset
+
+                <!-- *** Pass $kos->id, not id_kos *** -->
+                <a
+                    href="{{ route('kos.show', $kos->id) }}"
+                    class="mt-auto btn btn-primary btn-sm"
+                >
+                    Detail
+                </a>
+                </div>
+            </div>
+            </div>
+        @empty
+            <div class="col-12 text-center">
+            <p>Tidak ada kos ditemukan sesuai kriteria.</p>
+            </div>
+        @endforelse
+        </div>
+
+        <div class="d-flex justify-content-center mt-4">
+        {{ $kosList->withQueryString()->links() }}
+        </div>
+    </div>
+    </div>
+
 
     <!-- Start Blog  -->
     <div class="latest-blog">

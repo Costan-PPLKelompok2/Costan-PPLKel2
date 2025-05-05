@@ -130,7 +130,9 @@
       @forelse($kosList as $kos)
         <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
           <img
-            src="{{ asset('storage/'.($kos->foto ?? 'default.jpg')) }}"
+            src="{{ $kos->foto
+                    ? asset('storage/'.$kos->foto)
+                    : asset('images/default.jpg') }}"
             alt="{{ $kos->nama_kos }}"
             class="h-48 w-full object-cover"
           >
@@ -150,8 +152,10 @@
             @isset($kos->distance)
               <p class="text-gray-500 text-xs mt-2">Jarak: {{ round($kos->distance,2) }} km</p>
             @endisset
+
+            {{-- FIXED: use $kos->id for the detail route --}}
             <a
-              href="{{ route('kos.show', $kos->id_kos) }}"
+              href="{{ route('kos.show', $kos->id) }}"
               class="mt-4 inline-block text-center py-2 px-4 bg-indigo-600 text-white text-sm font-medium rounded hover:bg-indigo-700"
             >
               Detail
