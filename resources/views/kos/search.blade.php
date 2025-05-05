@@ -6,7 +6,7 @@
 
   {{-- Filters Card --}}
   <div class="bg-white shadow rounded-lg p-6">
-    <form action="{{ route('kos.search') }}" method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <form action="{{ route('kos.search') }}" method="GET" novalidate class="grid …">
       @php $facilities = $facilities ?? []; @endphp
 
       {{-- Keyword --}}
@@ -29,8 +29,9 @@
           type="text"
           name="location"
           id="location-input"
-          value="{{ request('location') }}"
+          autocomplete="off"
           placeholder="Cari lokasi..."
+          value="{{ request('location') }}"
           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
         >
         <input type="hidden" name="loc_lat" id="loc_lat" value="{{ request('loc_lat') }}">
