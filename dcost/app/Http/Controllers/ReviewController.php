@@ -46,12 +46,16 @@ class ReviewController extends Controller
     // 🔹 READ REVIEWS for OWNER
     public function ownerReviews()
     {
-        $user = Auth::user();
-        $reviews = Review::whereHas('kos', function ($query) use ($user) {
-            $query->where('user_id', $user->id); // Asumsi pemilik kos = user_id pada model Kos
-        })->with(['user', 'kos'])->latest()->get();
-
+        $kosMilikPemilik = Kos::where('user_id', Auth::id())->pluck('id');
+    
+        $reviews = Review::with(['user', 'kos'])
+                    ->whereIn('kos_id', $kosMilikPemilik)
+                    ->latest()
+                    ->get();
+    
         return view('review.owner', compact('reviews'));
+    
+    
     }
 
     // 🔹 UPDATE REVIEW
