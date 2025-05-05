@@ -35,7 +35,7 @@
     <!-- End Slider -->
 
     <!-- Start Categories  -->
-    @include('home.category')
+    @include('home.populer')
     <!-- End Categories -->
 	
     <!-- Start Offer -->
@@ -58,7 +58,7 @@
     <!-- End Offer -->
 
     <!-- Start Products  -->
-    @include('home.kost')
+    @include('home.kos')
     <!-- End Products  -->
 
     <!-- Start Blog  -->

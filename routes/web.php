@@ -44,7 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kos/show/{id}', [KosController::class, 'show'])->name('kos.show');
 
     // Route untuk review kos
-    // Route::get('/kos/{kos_id}/reviews', action: [KosReviewController::class, 'index'])->name('kos.reviews.index'); // Tambahkan ini
+    Route::get('/kos/{kos_id}/reviews', action: [KosReviewController::class, 'index'])->name('kos.reviews.index'); // Tambahkan ini
     // Route::resource('kos.reviews', KosReviewController::class); // Opsi lain, tapi mungkin berlebihan
 
     // Route untuk profile user

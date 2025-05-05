@@ -6,6 +6,8 @@ use App\Models\Kos;
 class HomeController extends Controller
 {
     public function index(){
-        return view("home.dashboard");
+        $kos = Kos::all();
+        $kosPopuler = Kos::orderBy('views', 'desc')->take(3)->get();
+        return view('home.dashboard', compact('kosPopuler', 'kos'));        
     }
 }

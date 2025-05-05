@@ -56,7 +56,7 @@ class KosController extends Controller
             'foto' => $fotoPath,
         ]);
 
-        return redirect()->route('kos.create')->with('success', 'Kos berhasil ditambahkan.');
+        return redirect()->route('kos.index')->with('success', 'Kos berhasil ditambahkan.');
     }
 
     // Tampilkan form edit
