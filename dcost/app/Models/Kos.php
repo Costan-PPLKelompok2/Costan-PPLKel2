@@ -1,15 +1,34 @@
 <?php
+
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Kos extends Model
 {
-    protected $fillable = ['name', 'alamat', 'harga', 'fasilitas'];
-    
-public function reviews()
-{
-    return $this->hasMany(Review::class);
-}
+    use HasFactory;
 
+    protected $table = 'kos';
+
+    protected $fillable = [
+        'user_id',
+        'nama_kos',
+        'deskripsi',
+        'alamat',
+        'harga',
+        'fasilitas',
+        'foto',
+        'views',
+    ];
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+  
+    public function pemilik()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
