@@ -21,8 +21,20 @@
     @livewireStyles
 </head>
 <body class="font-sans antialiased">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{{ route('user_profile.index') }}">User Profile</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Banner -->
     <x-banner />
 
+    <!-- Main App Container -->
     <div class="min-h-screen bg-gray-100">
         @livewire('navigation-menu')
 
@@ -42,8 +54,12 @@
         </main>
     </div>
 
+    <!-- Modals & Scripts -->
     @stack('modals')
     @livewireScripts
     @stack('scripts')
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

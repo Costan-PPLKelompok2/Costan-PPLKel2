@@ -1,8 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KosController;
 use App\Http\Controllers\PemilikController;
@@ -17,7 +24,6 @@ use App\Http\Controllers\ReviewController;
 
 // 1. Public landing & listing
 Route::get('/', [HomeController::class, 'index'])->name('dashboard');
-
 Route::get('/kos', [KosController::class, 'index'])->name('kos.index');
 
 // 2. Full‐filter search page
@@ -33,8 +39,23 @@ Route::get('/dashboard', function () {
     return route('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// 5. Optional redirect helper
-Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
+// 5. Auth routes
+Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
+Route::post('/register', [RegisteredUserController::class, 'store']);
+
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+
+Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
+
+Route::get('/verify-email', EmailVerificationPromptController::class)->name('verification.notice');
+Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)->middleware(['signed'])->name('verification.verify');
+Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
 
 // 6. Authenticated routes
 Route::middleware('auth')->group(function () {
@@ -61,14 +82,17 @@ Route::middleware('auth')->group(function () {
     Route::put('/review/{id}',            [ReviewController::class, 'update'])->name('review.update');
     Route::delete('/review/{id}',         [ReviewController::class, 'destroy'])->name('review.destroy');
 
-    // KosReviewController route (opsional jika berbeda dengan ReviewController)
+    // KosReviewController (if needed)
     Route::get('/kos/{kos_id}/reviews', [KosReviewController::class, 'index'])->name('kos.reviews.index');
 });
 
-// Route dummy untuk testing review
+// 7. Review dummy page
 Route::get('/review-dummy', function () {
     return view('review.dummy');
 })->name('review.dummy');
 
-// 7. Auth scaffolding
-require __DIR__.'/auth.php';
+// 8. Optional redirect route
+Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
+
+// 9. User profile resource route (non-auth specific)
+Route::resource('user_profile', UsersController::class);
