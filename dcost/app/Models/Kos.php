@@ -20,18 +20,18 @@ class Kos extends Model
         'fasilitas',
         'foto',
         'status_ketersediaan',
+        'views',
     ];
 
-    /**
-     * Cast status_ketersediaan into boolean (1 = available, 0 = full)
-     */
     protected $casts = [
         'status_ketersediaan' => 'boolean',
     ];
 
-    /**
-     * Pemilik kos (user relationship)
-     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+  
     public function pemilik()
     {
         return $this->belongsTo(User::class, 'user_id');
