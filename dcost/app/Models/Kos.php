@@ -19,7 +19,12 @@ class Kos extends Model
         'harga',
         'fasilitas',
         'foto',
+        'status_ketersediaan',
         'views',
+    ];
+
+    protected $casts = [
+        'status_ketersediaan' => 'boolean',
     ];
 
     public function reviews()
