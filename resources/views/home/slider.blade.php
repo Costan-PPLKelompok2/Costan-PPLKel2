@@ -7,7 +7,14 @@
                         <div class="col-md-12">
                             <h1 class="m-b-20"><strong>Welcome To <br> Cost'an</strong></h1>
                             <p class="m-b-40">Cari kos idaman anda sekarang!</p>
-                            <p><a class="btn hvr-hover" href="#">Cari Kos Anda</a></p>
+                            <!-- Button for search, conditionally link to login/register or search -->
+                            <p>
+                                @guest
+                                    <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
+                                @else
+                                    <a class="btn hvr-hover" href="{{ route('login') }}">Cari Kos Anda</a> <!-- Gantilah 'search' dengan route pencarian kos Anda -->
+                                @endguest
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -19,7 +26,13 @@
                         <div class="col-md-12">
                             <h1 class="m-b-20"><strong>Welcome To <br> Cost'an</strong></h1>
                             <p class="m-b-40">Cari kos idaman anda sekarang!</p>
-                            <p><a class="btn hvr-hover" href="#">Cari Kos Anda</a></p>
+                            <p>
+                                @guest
+                                    <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
+                                @else
+                                    <a class="btn hvr-hover" href="{{ route('login') }}">Cari Kos Anda</a>
+                                @endguest
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -31,7 +44,13 @@
                         <div class="col-md-12">
                             <h1 class="m-b-20"><strong>Welcome To <br> Cost'an</strong></h1>
                             <p class="m-b-40">Cari kos idaman anda sekarang!</p>
-                            <p><a class="btn hvr-hover" href="#">Cari Kos Anda</a></p>
+                            <p>
+                                @guest
+                                    <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
+                                @else
+                                    <a class="btn hvr-hover" href="{{ route('login') }}">Cari Kos Anda</a>
+                                @endguest
+                            </p>
                         </div>
                     </div>
                 </div>

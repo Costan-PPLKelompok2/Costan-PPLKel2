@@ -14,35 +14,50 @@ class KosController extends Controller
     {
         $this->middleware('auth')->except(['index', 'show', 'search', 'popular']);
     }
-
+    
     /**
      * Public landing + simple keyword filter
      */
     public function index(Request $request)
     {
-        $query = Kos::query();
+        $user_id = auth()->id();
 
-        if ($request->filled('search')) {
-            $kw = $request->search;
-            $query->where(function ($q) use ($kw) {
-                $q->where('nama_kos', 'like', "%{$kw}%")
-                    ->orWhere('alamat', 'like', "%{$kw}%")
-                    ->orWhere('fasilitas', 'like', "%{$kw}%");
+        // Mengambil data kos untuk user yang sedang login
+        $kosList = Kos::where('user_id', $user_id);
+
+        // Statistik
+        $totalKos = Kos::where('user_id', $user_id)->count();
+        $totalPenghuni = DB::table('penghuni') // Sesuaikan dengan nama tabel penghuni Anda
+            ->whereIn('kos_id', function ($query) use ($user_id) {
+                $query->select('id')
+                    ->from('kos')
+                    ->where('user_id', $user_id);
+            })
+            ->count();
+
+        // Pencarian
+        $search = $request->input('search');
+        if ($search) {
+            $kosList->where(function ($query) use ($search) {
+                $query->where('nama_kos', 'like', '%' . $search . '%')
+                    ->orWhere('alamat', 'like', '%' . $search . '%');
             });
         }
 
-        if ($request->filled('price_min') && $request->filled('price_max')) {
-            $query->whereBetween('harga', [
-                $request->price_min, $request->price_max
-            ]);
+        // Pengurutan
+        $sort = $request->input('sort'); // Ambil parameter 'sort' dari request
+        if ($sort === 'terbaru') {
+            $kosList->orderBy('created_at', 'desc');
+        } elseif ($sort === 'terlama') {
+            $kosList->orderBy('created_at', 'asc');
+        } else {
+            $kosList->orderBy('created_at', 'desc'); // Default: Terbaru
         }
 
-        if ($request->filled('fasilitas')) {
-            $query->where('fasilitas', 'like', '%' . $request->fasilitas . '%');
-        }
+        $kosList = $kosList->get();
 
-        $kosList = $query->paginate(12)->withQueryString();
-        return view('home.dashboard', compact('kosList'));
+        // Mengirimkan variabel $kosList, $totalKos, dan $totalPenghuni ke view
+        return view('kos.index', compact('kosList', 'totalKos', 'totalPenghuni'));
     }
 
     /**
@@ -182,8 +197,7 @@ class KosController extends Controller
         $data['user_id'] = Auth::id();
         Kos::create($data);
 
-        return redirect()->route('kos.
-        ')->with('success', 'Kos berhasil ditambahkan.');
+        return redirect()->route('kos.index')->with('success', 'Kos berhasil ditambahkan.');
     }
 
     public function edit($id)

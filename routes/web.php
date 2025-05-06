@@ -23,8 +23,7 @@ use App\Http\Controllers\ReviewController;
 */
 
 // 1. Public landing & listing
-Route::get('/', [HomeController::class, 'index'])->name('dashboard');
-Route::get('/kos', [KosController::class, 'index'])->name('kos.index');
+Route::get('/', [HomeController::class, 'index'])->name('dashboard.index');
 
 // 2. Full‐filter search page
 Route::get('/kos/search', [KosController::class, 'search'])->name('kos.search');
@@ -36,7 +35,7 @@ Route::get('/kos/{id_kos}', [KosController::class, 'show'])
 
 // 4. Protected dashboard shortcut
 Route::get('/dashboard', function () {
-    return route('dashboard');
+    return redirect()->route('dashboard.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // 5. Auth routes
@@ -65,13 +64,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile',[ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Kos management
+    Route::get('/kos',               [KosController::class, 'index'])->name('kos.index');
     Route::get('/my-kos',            [KosController::class, 'manage'])->name('kos.manage');
     Route::get('/kos/create',        [KosController::class, 'create'])->name('kos.create');
+    Route::get('/kos/populer',       [KosController::class, 'populer'])->name('kos.populer');
+    Route::get('/kos/{id}',          [KosController::class, 'show'])->name('kos.show');
     Route::post('/kos',              [KosController::class, 'store'])->name('kos.store');
     Route::get('/kos/{id}/edit',     [KosController::class, 'edit'])->name('kos.edit');
     Route::put('/kos/{id}',          [KosController::class, 'update'])->name('kos.update');
     Route::delete('/kos/{id}',       [KosController::class, 'destroy'])->name('kos.destroy');
-    Route::get('/kos/populer',       [KosController::class, 'populer'])->name('kos.populer');
 
     // Review routes
     Route::get('/kos/{id}/review/create', [ReviewController::class, 'create'])->name('review.create');
@@ -81,9 +82,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/review/{id}/edit',       [ReviewController::class, 'edit'])->name('review.edit');
     Route::put('/review/{id}',            [ReviewController::class, 'update'])->name('review.update');
     Route::delete('/review/{id}',         [ReviewController::class, 'destroy'])->name('review.destroy');
-
-    // KosReviewController (if needed)
-    Route::get('/kos/{kos_id}/reviews', [KosReviewController::class, 'index'])->name('kos.reviews.index');
 });
 
 // 7. Review dummy page

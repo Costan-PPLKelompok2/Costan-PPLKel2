@@ -9,8 +9,9 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
+        // Tabel kos
         Schema::create('kos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id'); // FK dari pemilik kos
@@ -20,19 +21,25 @@ return new class extends Migration
             $table->decimal('harga', 10, 2);
             $table->text('fasilitas'); // bisa disimpan sebagai teks atau JSON
             $table->string('foto')->nullable(); // path gambar
+            $table->boolean('status_ketersediaan')
+                  ->default(1)
+                  ->comment('1 = tersedia, 0 = penuh');
             $table->timestamps();
 
+            // Foreign key
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
+        // Tabel penghuni
         Schema::create('penghuni', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('kos_id'); // FK ke tabel kos
             $table->string('nama_penghuni');
             $table->string('no_hp');
-            // tambahkan field lain yang relevan untuk penghuni
+            // Tambahkan field lain yang relevan jika perlu
             $table->timestamps();
 
+            // Foreign key
             $table->foreign('kos_id')->references('id')->on('kos')->onDelete('cascade');
         });
     }

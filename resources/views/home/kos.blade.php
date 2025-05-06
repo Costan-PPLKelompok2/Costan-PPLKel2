@@ -9,13 +9,13 @@
                 </div>
             </div>
             <div class="row special-list">
-                @foreach($kos as $kos)
+                @forelse($kos as $kos)
                     <div class="col-lg-3 col-md-6 special-grid best-seller">
                         <div class="products-single fix">
                             <div class="box-img-hover">
                                 <img src="{{ Storage::url($kos->foto) }}" class="img-fluid" style="height: 200px; width: 100%; object-fit: cover;" alt="{{ $kos->nama_kos }}">
                                 <div class="mask-icon">
-                                    <a class="cart" href="#">Lihat Detail</a>
+                                    <a class="cart" href="{{route('kos.show', $kos->id)}}">Lihat Detail</a>
                                 </div>
                             </div>
                             <div class="why-text">
@@ -24,7 +24,11 @@
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="col-12 text-center">
+                        <p>Belum ada daftar kos.</p>
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>

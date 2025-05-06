@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            // Add other seeders here if needed
+            KosSeeder::class,
         ]);
     }
 }

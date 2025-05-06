@@ -16,7 +16,7 @@
                         <li class="dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Profile</a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">My Account</a></li>
+                                <li><a href="{{ route('profile.edit') }}">My Account</a></li>
                                 <li><a href="#">Favorite</a></li>
                             </ul>
                         </li>
