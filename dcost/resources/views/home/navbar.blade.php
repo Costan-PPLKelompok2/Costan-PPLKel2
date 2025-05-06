@@ -36,12 +36,20 @@
                     <ul>
                         <li class="search"><a href="#"><i class="fa fa-search"></i></a></li>
                         <li class="side-menu">
-							<a href="#">
-								<i class="fa fa-shopping-bag"></i>
-								<span class="badge">3</span>
-								<p>My Cart</p>
-							</a>
+						
 						</li>
+                        <li class="nav-item login">
+                            <a class="nav-link" href="{{ route('login') }}">
+                                <i class="fa fa-sign-in"></i>
+                                Login
+                            </a>
+                        </li>
+                        <li class="nav-item register">
+                            <a class="nav-link" href="{{ route('register') }}">
+                                <i class="fa fa-user-plus"></i>
+                                Register
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <!-- End Atribute Navigation -->
