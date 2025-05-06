@@ -22,10 +22,13 @@ class Kos extends Model
         'views',
     ];
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+  
     public function pemilik()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
-
-
 }
