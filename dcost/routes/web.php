@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
-# use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -11,70 +10,89 @@ use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\KosController;
+use App\Http\Controllers\PemilikController;
+use App\Http\Controllers\KosReviewController;
+use App\Http\Controllers\ReviewController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
-Route::get('/', [HomeController::class,"index"]);
 
+// 1. Public landing & listing
+Route::get('/', [HomeController::class, 'index'])->name('dashboard');
+Route::get('/kos', [KosController::class, 'index'])->name('kos.index');
+
+// 2. Full‐filter search page
+Route::get('/kos/search', [KosController::class, 'search'])->name('kos.search');
+
+// 3. Public detail (only numeric IDs)
+Route::get('/kos/{id_kos}', [KosController::class, 'show'])
+    ->whereNumber('id_kos')
+    ->name('kos.show');
+
+// 4. Protected dashboard shortcut
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return route('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Register
+// 5. Auth routes
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store']);
 
-// Login
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
 Route::post('/login', [AuthenticatedSessionController::class, 'store']);
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-// Forgot Password
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
 Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
 
-// Reset Password
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
 Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 
-// Email Verification
 Route::get('/verify-email', EmailVerificationPromptController::class)->name('verification.notice');
 Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)->middleware(['signed'])->name('verification.verify');
 Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
 
-#// Profile Routes (prefix profile, middleware auth)
-#Route::prefix('profile')->middleware('auth')->group(function () {
- #   Route::get('/', [ProfileController::class, 'show'])->name('profile.show');
-  #  Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-   # Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
-    #Route::delete('/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
-#});
+// 6. Authenticated routes
+Route::middleware('auth')->group(function () {
+    // Profile
+    Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile',[ProfileController::class, 'destroy'])->name('profile.destroy');
 
-// Menampilkan form untuk upload foto
-#Route::get('/profile/photo', [ProfileController::class, 'editPhoto'])->name('profile.photo');
+    // Kos management
+    Route::get('/my-kos',            [KosController::class, 'manage'])->name('kos.manage');
+    Route::get('/kos/create',        [KosController::class, 'create'])->name('kos.create');
+    Route::post('/kos',              [KosController::class, 'store'])->name('kos.store');
+    Route::get('/kos/{id}/edit',     [KosController::class, 'edit'])->name('kos.edit');
+    Route::put('/kos/{id}',          [KosController::class, 'update'])->name('kos.update');
+    Route::delete('/kos/{id}',       [KosController::class, 'destroy'])->name('kos.destroy');
+    Route::get('/kos/populer',       [KosController::class, 'populer'])->name('kos.populer');
 
-// Mengupdate foto profil
-#Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
+    // Review routes
+    Route::get('/kos/{id}/review/create', [ReviewController::class, 'create'])->name('review.create');
+    Route::post('/review',                [ReviewController::class, 'store'])->name('review.store');
+    Route::get('/kos/{id}/reviews',       [ReviewController::class, 'show'])->name('review.show');
+    Route::get('/pemilik/reviews',        [ReviewController::class, 'ownerReviews'])->name('review.owner');
+    Route::get('/review/{id}/edit',       [ReviewController::class, 'edit'])->name('review.edit');
+    Route::put('/review/{id}',            [ReviewController::class, 'update'])->name('review.update');
+    Route::delete('/review/{id}',         [ReviewController::class, 'destroy'])->name('review.destroy');
 
-// routes profil pengguna terbaru
-
-Route::get('/', function () {
-    return redirect()->route('user_profile.index');
+    // KosReviewController (if needed)
+    Route::get('/kos/{kos_id}/reviews', [KosReviewController::class, 'index'])->name('kos.reviews.index');
 });
 
-// Resource route untuk user profile
+// 7. Review dummy page
+Route::get('/review-dummy', function () {
+    return view('review.dummy');
+})->name('review.dummy');
+
+// 8. Optional redirect route
+Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
+
+// 9. User profile resource route (non-auth specific)
 Route::resource('user_profile', UsersController::class);
-
-
-Route::get('/redirect',[HomeController::class,"redirect"]);
-
-
-
-#require __DIR__.'/auth.php';
