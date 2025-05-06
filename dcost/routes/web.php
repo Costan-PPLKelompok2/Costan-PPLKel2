@@ -3,6 +3,7 @@
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KosController;
+use App\Http\Controllers\PemilikController;
 use App\Http\Controllers\KosReviewController; // Tambahkan ini
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -17,17 +18,19 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
+Route::get('/',[HomeController::class,"index"])->name('dashboard');
+
+Route::get('/dashboard', function () {
+    return route('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 // Default setelah login langsung ke /kos
-Route::get('/', function () {
-    return redirect('/kos');
-});
 
 // Semua route ini butuh user sudah login
 Route::middleware(['auth'])->group(function () {
     
     // Dashboard utama setelah login (kalau tetap mau dashboard)
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return view('home.dashboard');
     })->name('dashboard');
 
     // Route kelola kos
@@ -37,16 +40,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/kos/{id}/edit', [KosController::class, 'edit'])->name('kos.edit');
     Route::put('/kos/{id}', [KosController::class, 'update'])->name('kos.update');
     Route::delete('/kos/{id}', [KosController::class, 'destroy'])->name('kos.destroy');
+    Route::get('/kos/populer', [KosController::class, 'populer'])->name('kos.populer');
+    Route::get('/kos/show/{id}', [KosController::class, 'show'])->name('kos.show');
 
     // Route untuk review kos
-    Route::get('/kos/{kos_id}/reviews', [KosReviewController::class, 'index'])->name('kos.reviews.index'); // Tambahkan ini
+    Route::get('/kos/{kos_id}/reviews', action: [KosReviewController::class, 'index'])->name('kos.reviews.index'); // Tambahkan ini
     // Route::resource('kos.reviews', KosReviewController::class); // Opsi lain, tapi mungkin berlebihan
 
     // Route untuk profile user
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
 });
 
-// Untuk fitur auth seperti login, register, logout
 require __DIR__.'/auth.php';

@@ -1,14 +1,31 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use App\Models\Kos;
+use App\Models\KosView;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class KosController extends Controller
 {
+    public function popular()
+    {
+        // Ambil kos berdasarkan jumlah views terbanyak
+        $popularKos = Kos::orderBy('views', 'desc')->take(10)->get();
+
+        return view('popular', compact('popularKos'));
+    }
+    public function show($id)
+    {
+        $kos = Kos::findOrFail($id);
+
+        // Tambahkan jumlah views
+        $kos->increment('views');
+
+        return view('kos.show', compact('kos'));
+    }
+
     // Menampilkan form tambah kos
     public function create()
     {
@@ -39,20 +56,20 @@ class KosController extends Controller
             'foto' => $fotoPath,
         ]);
 
-        return redirect()->route('kos.create')->with('success', 'Kos berhasil ditambahkan.');
+        return redirect()->route('kos.index')->with('success', 'Kos berhasil ditambahkan.');
     }
 
     // Tampilkan form edit
     public function edit($id)
     {
-        $kos = \App\Models\Kos::where('user_id', auth()->id())->findOrFail($id);
+        $kos = Kos::where('user_id', auth()->id())->findOrFail($id);
         return view('kos.edit', compact('kos'));
     }
 
     // Simpan hasil edit
     public function update(Request $request, $id)
     {
-        $kos = \App\Models\Kos::where('user_id', auth()->id())->findOrFail($id);
+        $kos = Kos::where('user_id', auth()->id())->findOrFail($id);
 
         $request->validate([
             'nama_kos' => 'required',
@@ -77,7 +94,7 @@ class KosController extends Controller
     // Hapus data kos
     public function destroy($id)
     {
-        $kos = \App\Models\Kos::where('user_id', auth()->id())->findOrFail($id);
+        $kos = Kos::where('user_id', auth()->id())->findOrFail($id);
         $kos->delete();
 
         return redirect()->route('kos.index')->with('success', 'Kos berhasil dihapus!');

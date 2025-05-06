@@ -19,10 +19,13 @@ class Kos extends Model
         'harga',
         'fasilitas',
         'foto',
+        'views',
     ];
 
     public function pemilik()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+
 }
