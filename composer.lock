@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "50bf92e4ae85c850795d82c7226fdb6a
+    "content-hash": "935117ef2111046b1af0f7bc0faac8ec",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -9169,16 +9169,16 @@
         },
         {
             "name": "spatie/backtrace",
-            "version": "1.7.2",
+            "version": "1.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/backtrace.git",
-                "reference": "9807de6b8fecfaa5b3d10650985f0348b02862b2"
+                "reference": "80ae5fabe2a1e3bc7df5c7ca5d91b094dc314b20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/backtrace/zipball/9807de6b8fecfaa5b3d10650985f0348b02862b2",
-                "reference": "9807de6b8fecfaa5b3d10650985f0348b02862b2",
+                "url": "https://api.github.com/repos/spatie/backtrace/zipball/80ae5fabe2a1e3bc7df5c7ca5d91b094dc314b20",
+                "reference": "80ae5fabe2a1e3bc7df5c7ca5d91b094dc314b20",
                 "shasum": ""
             },
             "require": {
@@ -9216,7 +9216,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/backtrace/tree/1.7.2"
+                "source": "https://github.com/spatie/backtrace/tree/1.7.3"
             },
             "funding": [
                 {
@@ -9228,7 +9228,7 @@
                     "type": "other"
                 }
             ],
-            "time": "2025-04-28T14:55:53+00:00"
+            "time": "2025-05-07T07:20:00+00:00"
         },
         {
             "name": "spatie/error-solutions",

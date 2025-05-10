@@ -15,6 +15,8 @@ use App\Http\Controllers\KosController;
 use App\Http\Controllers\PemilikController;
 use App\Http\Controllers\KosReviewController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ChatCostController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -94,3 +96,16 @@ Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
 
 // 9. User profile resource route (non-auth specific)
 Route::resource('user_profile', UsersController::class);
+Route::get('/user_profile/{user_profile}', [UserProfileController::class, 'show'])->name('user_profile.show');
+
+
+// Chat routes
+Route::prefix('chat')->group(function () {
+    Route::get('/', [ChatCostController::class, 'index'])->name('chat.index');
+    Route::get('/show/{kost}', [ChatCostController::class, 'show'])->name('chat.show');
+    Route::post('/send', [ChatCostController::class, 'send'])->name('chat.send');
+    Route::get('/history', [ChatCostController::class, 'history'])->name('chat.history');
+});
+
+// Notification routes
+Route::post('/notifications/mark-read', [ChatCostController::class, 'markAsRead'])->name('notifications.mark-read');
