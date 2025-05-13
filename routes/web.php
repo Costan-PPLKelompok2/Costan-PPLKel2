@@ -58,6 +58,8 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 
 // 6. Authenticated routes
 Route::middleware('auth')->group(function () {
+    // Admin routes
+    Route::get('/admin', [PemilikController::class, 'index'])->name('admin.index');
     // Profile
     Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
