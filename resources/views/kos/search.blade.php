@@ -6,7 +6,7 @@
 
   {{-- Filters Card --}}
   <div class="bg-white shadow rounded-lg p-6">
-    <form action="{{ route('kos.search') }}" method="GET" novalidate class="grid …">
+    <form action="{{ route('kos.search') }}" method="GET" novalidate class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       @php $facilities = $facilities ?? []; @endphp
 
       {{-- Keyword --}}
@@ -121,6 +121,24 @@
     </form>
   </div>
 
+  {{-- Tombol ke halaman Compare --}}
+  @php $compare = session('compare', []); @endphp
+  @if(count($compare))
+    <div class="flex justify-end">
+      <a
+        href="{{ route('kos.compare') }}"
+        class="inline-flex items-center space-x-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md shadow"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <span>Perbandingan ({{ count($compare) }})</span>
+      </a>
+    </div>
+  @endif
+
   {{-- Results --}}
   <div>
     <h2 class="text-xl font-semibold text-gray-800 mb-4">
@@ -131,9 +149,7 @@
       @forelse($kosList as $kos)
         <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
           <img
-            src="{{ $kos->foto
-                    ? asset('storage/'.$kos->foto)
-                    : asset('images/default.jpg') }}"
+            src="{{ $kos->foto ? asset('storage/'.$kos->foto) : asset('images/default.jpg') }}"
             alt="{{ $kos->nama_kos }}"
             class="h-48 w-full object-cover"
           >
@@ -154,13 +170,25 @@
               <p class="text-gray-500 text-xs mt-2">Jarak: {{ round($kos->distance,2) }} km</p>
             @endisset
 
-            {{-- FIXED: use $kos->id for the detail route --}}
+            {{-- Detail Button --}}
             <a
               href="{{ route('kos.show', $kos->id) }}"
               class="mt-4 inline-block text-center py-2 px-4 bg-indigo-600 text-white text-sm font-medium rounded hover:bg-indigo-700"
             >
               Detail
             </a>
+
+            {{-- Toggle Compare --}}
+            <form action="{{ route('kos.compare.toggle', $kos->id) }}" method="POST" class="mt-2">
+              @csrf
+              @php $inCompare = in_array($kos->id, $compare); @endphp
+              <button
+                type="submit"
+                class="w-full inline-flex justify-center py-2 px-4 text-sm font-medium rounded {{ $inCompare ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700' }}"
+              >
+                {{ $inCompare ? '✓ Dibandingkan' : 'Bandingkan' }}
+              </button>
+            </form>
           </div>
         </div>
       @empty
