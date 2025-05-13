@@ -53,8 +53,11 @@ Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])-
 Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 
 Route::get('/verify-email', EmailVerificationPromptController::class)->name('verification.notice');
-Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)->middleware(['signed'])->name('verification.verify');
-Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
+Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
+     ->middleware(['signed'])
+     ->name('verification.verify');
+Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+     ->name('verification.send');
 
 // 6. Authenticated routes
 Route::middleware('auth')->group(function () {
@@ -68,11 +71,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-kos',            [KosController::class, 'manage'])->name('kos.manage');
     Route::get('/kos/create',        [KosController::class, 'create'])->name('kos.create');
     Route::get('/kos/populer',       [KosController::class, 'populer'])->name('kos.populer');
-    Route::get('/kos/{id}',          [KosController::class, 'show'])->name('kos.show');
     Route::post('/kos',              [KosController::class, 'store'])->name('kos.store');
     Route::get('/kos/{id}/edit',     [KosController::class, 'edit'])->name('kos.edit');
     Route::put('/kos/{id}',          [KosController::class, 'update'])->name('kos.update');
     Route::delete('/kos/{id}',       [KosController::class, 'destroy'])->name('kos.destroy');
+
+    // **Compare Kos** (baru)
+    Route::post('/kos/{id}/compare-toggle', [KosController::class, 'toggleCompare'])
+         ->name('kos.compare.toggle');
+    Route::get('/kos/compare', [KosController::class, 'comparePage'])
+         ->name('kos.compare');
 
     // Review routes
     Route::get('/kos/{id}/review/create', [ReviewController::class, 'create'])->name('review.create');
