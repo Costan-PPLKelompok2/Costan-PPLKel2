@@ -24,7 +24,7 @@ class KosController extends Controller
             'alamat' => 'required',
             'harga' => 'required|numeric',
             'fasilitas' => 'required',
-            'foto' => 'nullable|image|max:2048',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Tambahkan aturan mimes
         ]);
 
         $fotoPath = $request->file('foto') ? $request->file('foto')->store('foto_kos', 'public') : null;
@@ -60,7 +60,7 @@ class KosController extends Controller
             'alamat' => 'required',
             'harga' => 'required|numeric',
             'fasilitas' => 'required',
-            'foto' => 'nullable|image|max:2048',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Tambahkan aturan mimes
         ]);
 
         $data = $request->only(['nama_kos', 'deskripsi', 'alamat', 'harga', 'fasilitas']);
