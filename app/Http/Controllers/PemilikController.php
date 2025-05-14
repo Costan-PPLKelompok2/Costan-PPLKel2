@@ -21,20 +21,19 @@ class PemilikController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role == 'admin') {
-            $data = Kos::select('user_id')
-                ->selectRaw('COUNT(*) as total_kos')
-                ->groupBy('user_id')
-                ->with('pemilik')
-                ->get();
-        } else {
-            $data = Kos::where('user_id', $user->id)
-                ->select('nama_kos')
-                ->selectRaw('views as total_kos')
-                ->get();
+        $query = Kos::query();
+
+        if ($user->role != 'admin') {
+            $query->where('user_id', $user->id);
         }
 
-        return view('admin.index', compact('data', 'user'));
+        $viewsStatistik = $query->select('nama_kos', 'views')
+                        ->orderByDesc('views')
+                        ->get();
+        $totalKos = $query->count();
+        $totalViews = $query->sum('views');
+
+        return view('admin.index', compact('viewsStatistik','totalKos','totalViews', 'user'));
     }
 
 }
