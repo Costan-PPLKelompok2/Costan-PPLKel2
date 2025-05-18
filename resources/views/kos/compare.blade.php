@@ -1,6 +1,8 @@
+{{-- resources/views/kos/compare.blade.php --}}
 @extends('layouts.app')
+
 @section('content')
-<div class="max-w-7xl mx-auto py-8 px-4">
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
   <h1 class="text-2xl font-semibold mb-6">Perbandingan Kos</h1>
 
   @if($kosList->isEmpty())
@@ -12,7 +14,15 @@
           <tr>
             <th class="border px-4 py-2"></th>
             @foreach($kosList as $kos)
-              <th class="border px-4 py-2">{{ $kos->nama_kos }}</th>
+              <th class="border px-4 py-2 whitespace-nowrap">
+                <div class="flex items-center justify-between">
+                  <span class="font-medium">{{ $kos->nama_kos }}</span>
+                  <form action="{{ route('kos.compare.toggle', ['id_kos' => $kos->id_kos]) }}" method="POST" class="ml-2">
+                    @csrf
+                    <button type="submit" class="text-red-600 hover:text-red-800">&times;</button>
+                  </form>
+                </div>
+              </th>
             @endforeach
           </tr>
         </thead>
@@ -20,7 +30,7 @@
           <tr>
             <td class="border px-4 py-2 font-medium">Harga</td>
             @foreach($kosList as $kos)
-              <td class="border px-4 py-2">Rp {{ number_format($kos->harga) }}</td>
+              <td class="border px-4 py-2 whitespace-nowrap">Rp {{ number_format($kos->harga) }}</td>
             @endforeach
           </tr>
           <tr>
@@ -39,7 +49,7 @@
             <td class="border px-4 py-2 font-medium">Fasilitas</td>
             @foreach($kosList as $kos)
               <td class="border px-4 py-2">
-                <ul class="list-disc list-inside">
+                <ul class="list-disc list-inside space-y-1">
                   @foreach(explode(',', $kos->fasilitas) as $f)
                     <li>{{ trim($f) }}</li>
                   @endforeach
@@ -50,8 +60,11 @@
           <tr>
             <td class="border px-4 py-2 font-medium">Lokasi</td>
             @foreach($kosList as $kos)
-              <td class="border px-4 py-2">
-                <a href="{{ route('kos.show', $kos->id) }}" class="text-indigo-600 hover:underline">
+              <td class="border px-4 py-2 whitespace-nowrap">
+                <a
+                  href="{{ route('kos.show', ['id_kos' => $kos->id_kos]) }}"
+                  class="text-indigo-600 hover:underline"
+                >
                   Lihat Detail
                 </a>
               </td>

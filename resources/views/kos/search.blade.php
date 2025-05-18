@@ -121,7 +121,7 @@
     </form>
   </div>
 
-  {{-- Tombol ke halaman Compare --}}
+  {{-- Compare Button --}}
   @php $compare = session('compare', []); @endphp
   @if(count($compare))
     <div class="flex justify-end">
@@ -167,7 +167,7 @@
               </li>
             </ul>
             @isset($kos->distance)
-              <p class="text-gray-500 text-xs mt-2">Jarak: {{ round($kos->distance,2) }} km</p>
+              <p class="text-gray-500 text-xs mt-2">Jarak: {{ round($kos->distance, 2) }} km</p>
             @endisset
 
             {{-- Detail Button --}}

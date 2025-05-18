@@ -12,8 +12,6 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KosController;
-use App\Http\Controllers\PemilikController;
-use App\Http\Controllers\KosReviewController;
 use App\Http\Controllers\ReviewController;
 
 /*
@@ -22,23 +20,30 @@ use App\Http\Controllers\ReviewController;
 |--------------------------------------------------------------------------
 */
 
-// 1. Public landing & listing
-Route::get('/', [HomeController::class, 'index'])->name('dashboard.index');
+// 1. Public landing page
+Route::get('/', [HomeController::class, 'index'])
+     ->name('dashboard.index');
 
-// 2. Full‐filter search page
-Route::get('/kos/search', [KosController::class, 'search'])->name('kos.search');
+// 2. Public kos listing
+Route::get('/kos', [KosController::class, 'index'])
+     ->name('kos.index');
 
-// 3. Public detail (only numeric IDs)
+// 3. Full‐filter search page
+Route::get('/kos/search', [KosController::class, 'search'])
+     ->name('kos.search');
+
+// 4. Public detail view (only numeric IDs)
 Route::get('/kos/{id_kos}', [KosController::class, 'show'])
-    ->whereNumber('id_kos')
-    ->name('kos.show');
+     ->whereNumber('id_kos')
+     ->name('kos.show');
 
-// 4. Protected dashboard shortcut
+// 5. Dashboard redirect shortcut (authenticated & verified)
 Route::get('/dashboard', function () {
     return redirect()->route('dashboard.index');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified'])
+  ->name('dashboard');
 
-// 5. Auth routes
+// 6. Authentication (register / login / password / email verification)
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store']);
 
@@ -54,35 +59,36 @@ Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('p
 
 Route::get('/verify-email', EmailVerificationPromptController::class)->name('verification.notice');
 Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
-     ->middleware(['signed'])
+     ->middleware('signed')
      ->name('verification.verify');
 Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
      ->name('verification.send');
 
-// 6. Authenticated routes
+// 7. All routes that require a logged-in user
 Route::middleware('auth')->group(function () {
-    // Profile
-    Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
+    // Profile management
+    Route::get('/profile',   [ProfileController::class, 'edit'])   ->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile',[ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Kos management
-    Route::get('/kos',               [KosController::class, 'index'])->name('kos.index');
-    Route::get('/my-kos',            [KosController::class, 'manage'])->name('kos.manage');
-    Route::get('/kos/create',        [KosController::class, 'create'])->name('kos.create');
-    Route::get('/kos/populer',       [KosController::class, 'populer'])->name('kos.populer');
-    Route::post('/kos',              [KosController::class, 'store'])->name('kos.store');
-    Route::get('/kos/{id}/edit',     [KosController::class, 'edit'])->name('kos.edit');
-    Route::put('/kos/{id}',          [KosController::class, 'update'])->name('kos.update');
-    Route::delete('/kos/{id}',       [KosController::class, 'destroy'])->name('kos.destroy');
+    // Kos CRUD for owners
+    Route::get('/my-kos',         [KosController::class, 'manage']) ->name('kos.manage');
+    Route::get('/kos/create',     [KosController::class, 'create']) ->name('kos.create');
+    Route::post('/kos',           [KosController::class, 'store'])  ->name('kos.store');
+    Route::get('/kos/{id}/edit',  [KosController::class, 'edit'])   ->name('kos.edit');
+    Route::put('/kos/{id}',       [KosController::class, 'update']) ->name('kos.update');
+    Route::delete('/kos/{id}',    [KosController::class, 'destroy'])->name('kos.destroy');
 
-    // **Compare Kos** (baru)
+    // Popular listing
+    Route::get('/kos/populer', [KosController::class, 'popular'])->name('kos.populer');
+
+    // Compare feature
     Route::post('/kos/{id}/compare-toggle', [KosController::class, 'toggleCompare'])
          ->name('kos.compare.toggle');
     Route::get('/kos/compare', [KosController::class, 'comparePage'])
          ->name('kos.compare');
 
-    // Review routes
+    // Reviews
     Route::get('/kos/{id}/review/create', [ReviewController::class, 'create'])->name('review.create');
     Route::post('/review',                [ReviewController::class, 'store'])->name('review.store');
     Route::get('/kos/{id}/reviews',       [ReviewController::class, 'show'])->name('review.show');
@@ -92,13 +98,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/review/{id}',         [ReviewController::class, 'destroy'])->name('review.destroy');
 });
 
-// 7. Review dummy page
+// 8. A dummy review page for testing
 Route::get('/review-dummy', function () {
     return view('review.dummy');
 })->name('review.dummy');
 
-// 8. Optional redirect route
+// 9. Optional redirect helper
 Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
 
-// 9. User profile resource route (non-auth specific)
+// 10. Non-auth user profile resource
 Route::resource('user_profile', UsersController::class);
