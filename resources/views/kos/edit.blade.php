@@ -72,7 +72,9 @@
                             </div>
                         @endif
                     </div>
-
+                    <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
+                    <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
+                    
                     <button type="submit" class="btn btn-primary w-100">Simpan Perubahan</button>
                 </form>
             </div>

@@ -10,6 +10,7 @@ class KosSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * @group KosSeeder
      */
     public function run(): void
     {

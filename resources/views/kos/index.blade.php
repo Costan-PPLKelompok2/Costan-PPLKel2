@@ -112,7 +112,7 @@
                                                         <i class="fas fa-trash"></i> Hapus
                                                     </button>
                                                 </form>
-                                                <a href="{{ route('kos.reviews.index', $kos->id) }}" class="btn btn-info btn-sm" style="border-radius: 10px;">
+                                                <a href="#" class="btn btn-info btn-sm" style="border-radius: 10px;">
                                                     <i class="fas fa-comments"></i> Review
                                                 </a>
                                             </div>
