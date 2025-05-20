@@ -40,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
     // Fitur Favorit Kos
     Route::post('/kos/{kos}/favorite', [FavoriteController::class, 'store'])->name('kos.favorite');
     Route::delete('/kos/{kos}/unfavorite', [FavoriteController::class, 'destroy'])->name('kos.unfavorite');
-    Route::get('/favorit', [FavoriteController::class, 'index'])->name('favorit.index'); // (untuk PBI 21)
+    Route::get('/favorit', [FavoriteController::class, 'index'])->name('favorit.index');
 
     // Manajemen Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
