@@ -29,7 +29,7 @@
                     <hr>
 
                     <h5>Riwayat Percakapan</h5>
-                    <div class="chat-history p-3 mb-4" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
+                    <div class="chat-history p-3 mb-2" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
                         @if($messages->isEmpty())
                             <div class="text-center text-muted">
                                 Belum ada percakapan. Mulai chat dengan pemilik kos sekarang!
@@ -52,6 +52,12 @@
                         @endif
                     </div>
 
+                    <!-- Typing status -->
+                    <div id="typing-status" class="text-muted mb-2" style="display: none;">
+                        Pemilik sedang mengetik...
+                    </div>
+
+                    <!-- Form Kirim Pesan -->
                     <form action="{{ route('chat.send') }}" method="POST">
                         @csrf
                         <input type="hidden" name="kost_id" value="{{ $kost->id }}">
@@ -76,3 +82,35 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Scroll to bottom on load
+    document.addEventListener('DOMContentLoaded', function () {
+        var chatHistory = document.querySelector('.chat-history');
+        if(chatHistory){
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        // Disable button after submit
+        const form = document.querySelector('form');
+        const submitButton = form.querySelector('button[type="submit"]');
+        form.addEventListener('submit', () => {
+            submitButton.disabled = true;
+            submitButton.innerText = 'Mengirim...';
+        });
+
+        // Typing status
+        const messageInput = document.querySelector('textarea[name="message"]');
+        const typingStatus = document.getElementById('typing-status');
+
+        messageInput.addEventListener('input', function () {
+            typingStatus.style.display = 'block';
+            clearTimeout(window.typingTimer);
+            window.typingTimer = setTimeout(() => {
+                typingStatus.style.display = 'none';
+            }, 1500);
+        });
+    });
+</script>
+@endpush
