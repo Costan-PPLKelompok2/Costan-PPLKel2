@@ -32,8 +32,15 @@ return new class extends Migration
             $table->json('preferred_facilities')->nullable();  
             $table->timestamps();
             $table->softDeletes();
+
+        Schema::table('users', function (Blueprint $table) {
+        $table->enum('role', ['pemilik', 'penyewa'])->default('penyewa')->after('email');
         });
     }
+
+   
+
+
 
     /**
      * Reverse the migrations.
@@ -41,5 +48,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('role');
+        });
     }
 };

@@ -37,6 +37,7 @@ class User extends Authenticatable
         'preferred_kos_type',
         'preferred_facilities',
         'password',
+        'role',
     ];
 
     /**
