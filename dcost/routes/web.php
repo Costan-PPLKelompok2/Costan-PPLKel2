@@ -1,36 +1,32 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KosController;
-use App\Http\Controllers\KosReviewController; // Tambahkan ini
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\KosReviewController;
+use App\Http\Controllers\FavoriteController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-| Here is where you can register web routes for your application.
-| These routes are loaded by the RouteServiceProvider and all of them
-| will be assigned to the "web" middleware group. Make something great!
-|
 */
 
-// Default setelah login langsung ke /kos
 Route::get('/', function () {
     return redirect('/kos');
 });
 
-// Semua route ini butuh user sudah login
+// Semua route di bawah ini hanya bisa diakses jika sudah login
 Route::middleware(['auth'])->group(function () {
-    
-    // Dashboard utama setelah login (kalau tetap mau dashboard)
+
+    // Dashboard (optional)
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
-    // Route kelola kos
+    // Manajemen Kos
     Route::get('/kos', [KosController::class, 'index'])->name('kos.index');
     Route::get('/kos/create', [KosController::class, 'create'])->name('kos.create');
     Route::post('/kos', [KosController::class, 'store'])->name('kos.store');
@@ -38,15 +34,19 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/kos/{id}', [KosController::class, 'update'])->name('kos.update');
     Route::delete('/kos/{id}', [KosController::class, 'destroy'])->name('kos.destroy');
 
-    // Route untuk review kos
-    Route::get('/kos/{kos_id}/reviews', [KosReviewController::class, 'index'])->name('kos.reviews.index'); // Tambahkan ini
-    // Route::resource('kos.reviews', KosReviewController::class); // Opsi lain, tapi mungkin berlebihan
+    // Review Kos (PBI mendatang / PBI tambahan)
+    Route::get('/kos/{kos_id}/reviews', [KosReviewController::class, 'index'])->name('kos.reviews.index');
 
-    // Route untuk profile user
+    // Fitur Favorit Kos
+    Route::post('/kos/{kos}/favorite', [FavoriteController::class, 'store'])->name('kos.favorite');
+    Route::delete('/kos/{kos}/unfavorite', [FavoriteController::class, 'destroy'])->name('kos.unfavorite');
+    Route::get('/favorit', [FavoriteController::class, 'index'])->name('favorit.index'); // (untuk PBI 21)
+
+    // Manajemen Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Untuk fitur auth seperti login, register, logout
+// Auth route (login, register, logout)
 require __DIR__.'/auth.php';

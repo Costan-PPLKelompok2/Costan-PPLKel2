@@ -58,4 +58,12 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    /**
+     * Relasi: user memiliki banyak kos favorit
+     */
+    public function favoriteKos()
+    {
+        return $this->belongsToMany(Kos::class, 'favorites')->withTimestamps();
+    }
 }
