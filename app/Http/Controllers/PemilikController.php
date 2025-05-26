@@ -8,15 +8,6 @@ use Illuminate\Http\Request;
 
 class PemilikController extends Controller
 {
-    public function statistik()
-{
-    $kosList = Kos::where('user_id', auth()->id())
-        ->withCount(['views', 'favorites'])
-        ->with(['views' => fn($q) => $q->selectRaw('kos_id, DATE(created_at) as date, count(*) as count')->groupBy('date')])
-        ->get();
-
-    return view('admin.index', compact('kosList'));
-}
     public function index()
     {
         $user = Auth::user();
@@ -35,5 +26,20 @@ class PemilikController extends Controller
 
         return view('admin.index', compact('viewsStatistik','totalKos','totalViews', 'user'));
     }
+    public function statistik()
+    {
+        $user = Auth::user();
+
+        if ($user->role != 'pemilik') {
+            return redirect()->route('home.index')->with('error', 'Akses ditolak.');
+        }
+
+        $kosList = Kos::where('user_id', $user->id)->get();
+        $totalKos = $kosList->count();
+        $totalViews = $kosList->sum('views');
+
+        return view('admin.index', compact('kosList', 'totalKos', 'totalViews'));
+    }
+    
 
 }

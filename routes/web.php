@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\LocationHelper;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -23,7 +24,8 @@ use App\Http\Controllers\ReviewController;
 */
 
 // 1. Public landing & listing
-Route::get('/', [HomeController::class, 'index'])->name('dashboard.index');
+Route::get('/', [HomeController::class, 'redirect'])->name('redirect');
+Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 
 // 2. Full‐filter search page
 Route::get('/kos/search', [KosController::class, 'search'])->name('kos.search');
@@ -35,7 +37,7 @@ Route::get('/kos/{id_kos}', [KosController::class, 'show'])
 
 // 4. Protected dashboard shortcut
 Route::get('/dashboard', function () {
-    return redirect()->route('dashboard.index');
+    return redirect()->route('redirect');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // 5. Auth routes
@@ -58,8 +60,9 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 
 // 6. Authenticated routes
 Route::middleware('auth')->group(function () {
-    // Admin routes
+    // Admin dashboard
     Route::get('/admin', [PemilikController::class, 'index'])->name('admin.index');
+
     // Profile
     Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -76,6 +79,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/kos/{id}',          [KosController::class, 'update'])->name('kos.update');
     Route::delete('/kos/{id}',       [KosController::class, 'destroy'])->name('kos.destroy');
 
+    // Pemilik dashboard
+    Route::get('/pemilik/dashboard', [PemilikController::class, 'index'])->name('pemilik.dashboard');
+    Route::get('/pemilik/statistik/{id}', [PemilikController::class, 'statistik'])->name('pemilik.statistik');
+
     // Review routes
     Route::get('/kos/{id}/review/create', [ReviewController::class, 'create'])->name('review.create');
     Route::post('/review',                [ReviewController::class, 'store'])->name('review.store');
@@ -84,6 +91,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/review/{id}/edit',       [ReviewController::class, 'edit'])->name('review.edit');
     Route::put('/review/{id}',            [ReviewController::class, 'update'])->name('review.update');
     Route::delete('/review/{id}',         [ReviewController::class, 'destroy'])->name('review.destroy');
+
+    // User profile management
+    Route::resource('user_profile', UsersController::class);
 });
 
 // 7. Review dummy page
@@ -94,5 +104,3 @@ Route::get('/review-dummy', function () {
 // 8. Optional redirect route
 Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
 
-// 9. User profile resource route (non-auth specific)
-Route::resource('user_profile', UsersController::class);

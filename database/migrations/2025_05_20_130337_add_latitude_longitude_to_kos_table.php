@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('kos', function (Blueprint $table) {
-            $table->decimal('latitude', 10, 7)->nullable();
-            $table->decimal('longitude', 10, 7)->nullable();
+            $table->decimal('latitude', 10, 7)->nullable()->after('alamat');
+            $table->decimal('longitude', 10, 7)->nullable()->after('latitude');
         });
     }
 

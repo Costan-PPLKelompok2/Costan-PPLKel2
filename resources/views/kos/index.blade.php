@@ -45,6 +45,7 @@
                         </form>
                     </div>
                     <div class="col-md-6 text-end">
+                        <a href="{{ route('pemilik.dashboard') }}" class="btn btn-info" style="color:#ffffff; border-radius: 10px; font-family: 'Montserrat', sans-serif;"> Lihat Statistik Kos Saya </a>
                         <div class="dropdown d-inline-block me-2">
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-family: 'Montserrat', sans-serif;">
                                 <i class="fas fa-sort"></i> Urutkan

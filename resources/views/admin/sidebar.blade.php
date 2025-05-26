@@ -1,10 +1,18 @@
     <li class="nav-item menu-items">
-    <a class="nav-link" href="{{route('admin.index')}}">
-    <span class="menu-icon">
-        <i class="mdi mdi-speedometer"></i>
-    </span>
-    <span class="menu-title">Dashboard</span>
-    </a>
+        <a class="nav-link" href="{{route('pemilik.dashboard')}}">
+            <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+            </span>
+            <span class="menu-title">Dashboard</span>
+        </a>
+    </li>
+    <li class="nav-item menu-items">
+        <a class="nav-link" href="{{route('kos.manage')}}">
+            <span class="menu-icon">
+                <i class="mdi mdi-chart-donut"></i>
+            </span>
+            <span class="menu-title">Manage Kos</span>
+        </a>
     </li>
     <!-- <li class="nav-item menu-items">
     <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">

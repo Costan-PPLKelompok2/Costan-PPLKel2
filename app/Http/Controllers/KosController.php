@@ -193,10 +193,8 @@ class KosController extends Controller
 
         $koordinat = LocationHelper::geocodeAddress($data['alamat']);
 
-        if ($koordinat) {
-            $data['latitude'] = $koordinat['latitude'];
-            $data['longitude'] = $koordinat['longitude'];
-        }
+        $data['latitude'] = $koordinat['latitude'];
+        $data['longitude'] = $koordinat['longitude'];
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('foto_kos', 'public');
@@ -229,11 +227,15 @@ class KosController extends Controller
         ]);
         
         $koordinat = LocationHelper::geocodeAddress($data['alamat']);
-
-        if ($koordinat) {
+        
+        if (!$koordinat) {
+            return redirect()->back()->withErrors(['alamat' => 'Gagal mendapatkan koordinat untuk alamat yang diberikan.']);
+        }
+        else{
             $data['latitude'] = $koordinat['latitude'];
             $data['longitude'] = $koordinat['longitude'];
         }
+
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('foto_kos', 'public');

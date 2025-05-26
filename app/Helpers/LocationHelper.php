@@ -8,7 +8,9 @@ class LocationHelper
 {
     public static function geocodeAddress($alamat)
     {
-        $response = Http::get('https://nominatim.openstreetmap.org/search', [
+        $response = Http::withHeaders([
+            'User-Agent' => "Cost'an" 
+        ])->timeout(10)->get('https://nominatim.openstreetmap.org/search', [
             'q' => $alamat,
             'format' => 'json',
             'limit' => 1,
@@ -21,7 +23,6 @@ class LocationHelper
                 'longitude' => $data['lon'],
             ];
         }
-
         return null;
     }
 }

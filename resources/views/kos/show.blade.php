@@ -43,22 +43,22 @@
 
     {{-- Map --}}
     <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col">
-      <iframe
-        src="https://www.openstreetmap.org/export/embed.html?layer=mapnik&amp;q={{ urlencode($kos->alamat) }}"
-        class="w-full flex-1"
-        frameborder="0"
-        scrolling="no"
-      ></iframe>
-      <div class="p-4 text-center bg-gray-50">
-        <a
-          href="https://www.openstreetmap.org/search?query={{ urlencode($kos->alamat) }}"
-          target="_blank"
-          class="text-indigo-600 hover:underline"
-        >
-          Lihat Peta Lebih Besar
-        </a>
-      </div>
+    <iframe
+      src="https://www.openstreetmap.org/export/embed.html?bbox={{ $kos->longitude - 0.005 }},{{ $kos->latitude - 0.005 }},{{ $kos->longitude + 0.005 }},{{ $kos->latitude + 0.005 }}&layer=mapnik&marker={{ $kos->latitude }},{{ $kos->longitude }}"
+      class="w-full h-[400px]"
+      frameborder="0"
+      scrolling="no"
+    ></iframe>
+    <div class="p-4 text-center bg-gray-50">
+      <a
+        href="https://www.openstreetmap.org/?mlat={{ $kos->latitude }}&mlon={{ $kos->longitude }}#map=17/{{ $kos->latitude }}/{{ $kos->longitude }}"
+        target="_blank"
+        class="text-indigo-600 hover:underline"
+      >
+        Lihat Peta Lebih Besar
+      </a>
     </div>
+  </div>
 
   </div>
 </div>
