@@ -12,7 +12,7 @@
                                 @guest
                                     <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
                                 @else
-                                    <a class="btn hvr-hover" href="{{ route('login') }}">Cari Kos Anda</a> <!-- Gantilah 'search' dengan route pencarian kos Anda -->
+                                    <a class="btn hvr-hover" href="{{ route('kos.search') }}">Cari Kos Anda</a> <!-- Gantilah 'search' dengan route pencarian kos Anda -->
                                 @endguest
                             </p>
                         </div>
