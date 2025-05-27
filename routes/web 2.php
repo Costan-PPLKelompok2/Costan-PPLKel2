@@ -94,19 +94,3 @@ Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
 
 // 9. User profile resource route (non-auth specific)
 Route::resource('user_profile', UsersController::class);
-
-//10. Review pemilik kos
-Route::middleware('auth')->group(function () {
-    Route::get('/owner-reviews/{owner}', [OwnerReviewController::class, 'showOwnerReviews']);
-    Route::post('/owner-reviews', [OwnerReviewController::class, 'store']);
-    Route::get('/my-owner-reviews', [OwnerReviewController::class, 'index']);
-});
-
-use App\Http\Controllers\OwnerReviewController;
-
-Route::middleware(['auth'])->group(function () {
-    Route::post('/owner-reviews', [OwnerReviewController::class, 'store'])->name('owner-reviews.store');
-    Route::get('/owner/{owner}/reviews', [OwnerReviewController::class, 'showReviewsForOwner'])->name('owner-reviews.show');
-    Route::get('/my-owner-reviews', [OwnerReviewController::class, 'myReviews'])->name('owner-reviews.my');
-});
-

@@ -63,4 +63,17 @@ class User extends Authenticatable
         'price_range' => 'decimal:2',
     ];
 
+    // User sebagai pemilik
+public function reviewsDiterima()
+{
+    return $this->hasMany(OwnerReview::class, 'pemilik_id');
+}
+
+// User sebagai penyewa
+public function reviewsDiberikan()
+{
+    return $this->hasMany(OwnerReview::class, 'penyewa_id');
+}
+
+
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->enum('role', ['pemilik', 'penyewa'])->default('penyewa');
             $table->string('phone')->nullable(); 
             $table->text('address')->nullable();
             $table->timestamp('email_verified_at')->nullable();
@@ -22,25 +23,14 @@ return new class extends Migration
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();
-            
-            // Menambahkan price sesuai dengan model
-            $table->decimal('price', 12, 2)->nullable(); // Menambahkan field price
-            
-            // Preferensi pencarian sesuai model
+            $table->decimal('price', 12, 2)->nullable(); 
             $table->string('preferred_location')->nullable();
             $table->string('preferred_kos_type')->nullable();
             $table->json('preferred_facilities')->nullable();  
             $table->timestamps();
             $table->softDeletes();
-
-        Schema::table('users', function (Blueprint $table) {
-        $table->enum('role', ['pemilik', 'penyewa'])->default('penyewa')->after('email');
         });
     }
-
-   
-
-
 
     /**
      * Reverse the migrations.
@@ -48,9 +38,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('users');
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-        });
     }
 };
