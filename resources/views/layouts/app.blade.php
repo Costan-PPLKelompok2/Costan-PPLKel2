@@ -22,6 +22,7 @@
 </head>
 <body class="font-sans antialiased">
     <!-- Navbar -->
+    @stack('scripts')
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
         @if (request()->routeIs('kos.show'))
@@ -35,6 +36,49 @@
             </button>
         </div>
     </nav>
+
+    <!-- Tambahkan ini di navigation bar -->
+    @stack('scripts')
+    <li class="nav-item">
+        <a class="nav-link position-relative" href="{{ route('chat.index') }}">
+            <i class="fas fa-comments"></i>
+            Chat
+            <span id="chat-notification-badge" 
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
+                0
+            </span>
+        </a>
+    </li>
+
+    <!-- Script untuk update notification badge -->
+    @stack('scripts')
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        updateChatNotificationBadge();
+        
+        // Update setiap 30 detik
+        setInterval(updateChatNotificationBadge, 30000);
+    });
+
+    function updateChatNotificationBadge() {
+        fetch('/api/chat/notification-count')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const badge = document.getElementById('chat-notification-badge');
+                    const count = data.data.unread_count;
+                    
+                    if (count > 0) {
+                        badge.textContent = count > 99 ? '99+' : count;
+                        badge.classList.remove('d-none');
+                    } else {
+                        badge.classList.add('d-none');
+                    }
+                }
+            })
+            .catch(error => console.error('Error updating notification badge:', error));
+    }
+    </script>
 
     <!-- Banner -->
     <x-banner />

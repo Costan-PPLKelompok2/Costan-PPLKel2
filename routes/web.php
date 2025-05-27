@@ -15,7 +15,7 @@ use App\Http\Controllers\KosController;
 use App\Http\Controllers\PemilikController;
 use App\Http\Controllers\KosReviewController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\ChatCostController;
+use App\Http\Controllers\ChatController;
 
 
 /*
@@ -100,12 +100,23 @@ Route::get('/user_profile/{user_profile}', [UserProfileController::class, 'show'
 
 
 // Chat routes
-Route::prefix('chat')->group(function () {
-    Route::get('/', [ChatCostController::class, 'index'])->name('chat.index');
-    Route::get('/show/{kost}', [ChatCostController::class, 'show'])->name('chat.show');
-    Route::post('/send', [ChatCostController::class, 'send'])->name('chat.send');
-    Route::get('/history', [ChatCostController::class, 'history'])->name('chat.history');
+Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+Route::get('/chat/room/{chatRoom}', [ChatController::class, 'show'])->name('chat.room');
+Route::get('/chat/room/{id}', [ChatController::class, 'show'])->name('chat.room');
+// Jika menggunakan route API
+Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+
+
+// Chat API Routes (bisa juga di routes/api.php)
+Route::prefix('api/chat')->group(function () {
+    Route::get('/rooms', [ChatController::class, 'getChatRooms']);
+    Route::get('/messages/{chatRoom}', [ChatController::class, 'getMessages']);
+    Route::post('/send-message', [ChatController::class, 'sendMessage']);
+    Route::get('/notification-count', [ChatController::class, 'getNotificationCount']);
+    Route::post('/mark-room-read/{chatRoom}', [ChatController::class, 'markRoomAsRead']);
+    Route::delete('/delete-room/{chatRoom}', [ChatController::class, 'deleteRoom']);
 });
+
 
 // Notification routes
 Route::post('/notifications/mark-read', [ChatCostController::class, 'markAsRead'])->name('notifications.mark-read');
