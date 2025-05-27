@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,9 +18,7 @@ class User extends Authenticatable
     use TwoFactorAuthenticatable;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
+     * Atribut yang bisa diisi massal
      */
     protected $fillable = [
         'name',
@@ -30,9 +27,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
+     * Atribut yang disembunyikan
      */
     protected $hidden = [
         'password',
@@ -42,28 +37,24 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * Atribut yang di-cast otomatis
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
 
     /**
-     * The accessors to append to the model's array form.
-     *
-     * @var array<int, string>
+     * Atribut tambahan saat dikonversi ke array
      */
     protected $appends = [
         'profile_photo_url',
     ];
 
     /**
-     * Relasi: user memiliki banyak kos favorit
+     * Relasi: kos yang difavoritkan oleh user (penyewa)
      */
     public function favoriteKos()
     {
-        return $this->belongsToMany(Kos::class, 'favorites')->withTimestamps();
+        return $this->belongsToMany(Kos::class, 'favorites', 'user_id', 'kos_id')->withTimestamps();
     }
 }

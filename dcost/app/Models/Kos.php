@@ -21,13 +21,19 @@ class Kos extends Model
         'foto',
     ];
 
+    /**
+     * Relasi ke pemilik kos (user)
+     */
     public function pemilik()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    /**
+     * Relasi ke semua user yang memfavoritkan kos ini
+     */
     public function favoriters()
     {
-        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+        return $this->belongsToMany(User::class, 'favorites', 'kos_id', 'user_id')->withTimestamps();
     }
-    }
+}

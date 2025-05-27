@@ -15,18 +15,21 @@ use App\Http\Controllers\FavoriteController;
 */
 
 Route::get('/', function () {
-    return redirect('/kos');
+    return redirect('/dashboard');
 });
 
 // Semua route di bawah ini hanya bisa diakses jika sudah login
 Route::middleware(['auth'])->group(function () {
 
-    // Dashboard (optional)
+    // Dashboard
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
-    // Manajemen Kos
+    // Halaman eksplorasi kos untuk penyewa
+    Route::get('/explore', [KosController::class, 'explore'])->name('kos.explore');
+
+    // Manajemen Kos (Untuk pemilik kos)
     Route::get('/kos', [KosController::class, 'index'])->name('kos.index');
     Route::get('/kos/create', [KosController::class, 'create'])->name('kos.create');
     Route::post('/kos', [KosController::class, 'store'])->name('kos.store');
@@ -37,7 +40,7 @@ Route::middleware(['auth'])->group(function () {
     // Review Kos (PBI mendatang / PBI tambahan)
     Route::get('/kos/{kos_id}/reviews', [KosReviewController::class, 'index'])->name('kos.reviews.index');
 
-    // Fitur Favorit Kos
+    // Fitur Favorit Kos (untuk penyewa)
     Route::post('/kos/{kos}/favorite', [FavoriteController::class, 'store'])->name('kos.favorite');
     Route::delete('/kos/{kos}/unfavorite', [FavoriteController::class, 'destroy'])->name('kos.unfavorite');
     Route::get('/favorit', [FavoriteController::class, 'index'])->name('favorit.index');

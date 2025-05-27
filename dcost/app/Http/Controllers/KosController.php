@@ -124,5 +124,13 @@ class KosController extends Controller
 
         // Mengirimkan variabel $kosList, $totalKos, dan $totalPenghuni ke view
         return view('kos.index', compact('kosList', 'totalKos', 'totalPenghuni'));
+
+        
+    }
+    // Halaman eksplorasi kos untuk penyewa
+    public function explore()
+    {
+        $kosList = \App\Models\Kos::latest()->get();
+        return view('kos.explore', compact('kosList'));
     }
 }

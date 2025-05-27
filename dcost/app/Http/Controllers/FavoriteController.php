@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kos;
 use Illuminate\Http\Request;
+use App\Models\Kos;
 use Illuminate\Support\Facades\Auth;
 
 class FavoriteController extends Controller
@@ -12,7 +12,7 @@ class FavoriteController extends Controller
     {
         if (!Auth::user()->favoriteKos->contains($kos->id)) {
             Auth::user()->favoriteKos()->attach($kos->id);
-            return back()->with('success', 'Kos ditambahkan ke favorit.');
+            return back()->with('success', 'Kos berhasil ditambahkan ke favorit.');
         }
 
         return back()->with('info', 'Kos sudah ada di favorit.');
@@ -21,7 +21,7 @@ class FavoriteController extends Controller
     public function destroy(Kos $kos)
     {
         Auth::user()->favoriteKos()->detach($kos->id);
-        return back()->with('success', 'Kos dihapus dari favorit.');
+        return back()->with('success', 'Kos berhasil dihapus dari favorit.');
     }
 
     public function index()
