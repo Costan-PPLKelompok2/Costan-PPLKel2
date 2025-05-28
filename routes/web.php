@@ -83,10 +83,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/kos/populer', [KosController::class, 'popular'])->name('kos.populer');
 
     // Compare feature
-    Route::post('/kos/{id}/compare-toggle', [KosController::class, 'toggleCompare'])
-         ->name('kos.compare.toggle');
+    Route::post('/kos/{id_kos}/compare-toggle', [KosController::class, 'toggleCompare'])
+     ->name('kos.compare.toggle');
     Route::get('/kos/compare', [KosController::class, 'comparePage'])
-         ->name('kos.compare');
+     ->name('kos.compare');
 
     // Reviews
     Route::get('/kos/{id}/review/create', [ReviewController::class, 'create'])->name('review.create');
