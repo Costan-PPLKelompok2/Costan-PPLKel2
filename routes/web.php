@@ -64,6 +64,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile',[ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update'); 
+    Route::post('/profile/set-role', [ProfileController::class, 'setRole'])->name('profile.setRole');
 
     // Kos management
     Route::get('/kos',               [KosController::class, 'index'])->name('kos.index');
@@ -75,6 +77,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/kos/{id}/edit',     [KosController::class, 'edit'])->name('kos.edit');
     Route::put('/kos/{id}',          [KosController::class, 'update'])->name('kos.update');
     Route::delete('/kos/{id}',       [KosController::class, 'destroy'])->name('kos.destroy');
+    Route::get('/kos/{kosId}/initiate-chat', [KosController::class, 'initiateChatWithOwner'])->name('kos.initiateChat')->middleware('auth');
+
 
     // Review routes
     Route::get('/kos/{id}/review/create', [ReviewController::class, 'create'])->name('review.create');
@@ -94,27 +98,26 @@ Route::get('/review-dummy', function () {
 // 8. Optional redirect route
 Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
 
-// 9. User profile resource route (non-auth specific)
-Route::resource('user_profile', UsersController::class);
-Route::get('/user_profile/{user_profile}', [UserProfileController::class, 'show'])->name('user_profile.show');
-
-
 // Chat routes
-Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-Route::get('/chat/room/{chatRoom}', [ChatController::class, 'show'])->name('chat.room');
-Route::get('/chat/room/{id}', [ChatController::class, 'show'])->name('chat.room');
-// Jika menggunakan route API
-Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+Route::middleware(['auth'])->group(function () {
+    // Route untuk initiate chat yang sudah ada di KosController
+    Route::get('/kos/{kosId}/initiate-chat', [KosController::class, 'initiateChatWithOwner'])->name('kos.initiateChat');
 
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index'); // Daftar chat rooms (inbox)
+    Route::get('/chat/{chatRoom}', [ChatController::class, 'show'])->name('chat.show'); // Menampilkan isi chat room, ganti nama 'chat.room' menjadi 'chat.show' jika perlu agar konsisten dengan controller
+    Route::post('/chat/{chatRoom}/messages', [ChatController::class, 'store'])->name('chat.store'); // Mengirim pesan
+});
 
 // Chat API Routes (bisa juga di routes/api.php)
-Route::prefix('api/chat')->group(function () {
-    Route::get('/rooms', [ChatController::class, 'getChatRooms']);
-    Route::get('/messages/{chatRoom}', [ChatController::class, 'getMessages']);
-    Route::post('/send-message', [ChatController::class, 'sendMessage']);
-    Route::get('/notification-count', [ChatController::class, 'getNotificationCount']);
-    Route::post('/mark-room-read/{chatRoom}', [ChatController::class, 'markRoomAsRead']);
-    Route::delete('/delete-room/{chatRoom}', [ChatController::class, 'deleteRoom']);
+Route::middleware('auth:sanctum')->group(function () { // Atau middleware auth API Anda
+    Route::prefix('chat')->name('api.chat.')->group(function () {
+        Route::get('/rooms', [ChatController::class, 'getChatRooms']);
+        Route::get('/messages/{chatRoom}', [ChatController::class, 'getMessages']);
+        Route::post('/send-message', [ChatController::class, 'sendMessage']);
+        Route::get('/notification-count', [ChatController::class, 'getNotificationCount'])->name('notificationCount');
+        Route::post('/mark-room-read/{chatRoom}', [ChatController::class, 'markRoomAsRead']);
+        Route::delete('/delete-room/{chatRoom}', [ChatController::class, 'deleteRoom']);
+    });
 });
 
 

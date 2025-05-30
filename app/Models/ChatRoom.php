@@ -4,104 +4,66 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class ChatRoom extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
         'kos_id',
-        'tenant_id', 
-        'owner_id'
+        'tenant_id',
+        'owner_id',
     ];
 
-    protected $dates = ['deleted_at'];
-
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime'
-    ];
-
-    /**
-     * Relasi ke tabel kos
-     */
     public function kos()
     {
-        return $this->belongsTo(Kos::class, 'kos_id');
+        return $this->belongsTo(Kos::class);
     }
 
-    /**
-     * Relasi ke user sebagai penyewa
-     */
     public function tenant()
     {
-        return $this->belongsTo(User_profile::class, 'tenant_id');
+        return $this->belongsTo(User::class, 'tenant_id');
     }
 
-    /**
-     * Relasi ke user sebagai pemilik kos
-     */
     public function owner()
     {
-        return $this->belongsTo(User_profile::class, 'owner_id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
-    /**
-     * Relasi ke messages
-     */
     public function messages()
     {
-        return $this->hasMany(Message::class, 'chat_room_id');
+        return $this->hasMany(Message::class)->orderBy('created_at', 'asc');
     }
 
-    /**
-     * Get latest message
-     */
     public function latestMessage()
     {
-        return $this->hasOne(Message::class, 'chat_room_id')->latest();
+        return $this->hasOne(Message::class)->latestOfMany();
     }
 
-    /**
-     * Get unread messages count for specific user
-     */
-    public function unreadMessagesCount($userId)
+    // Untuk mendapatkan partisipan lain dalam chat room
+    public function otherParticipant()
+    {
+        if (Auth::id() == $this->tenant_id) {
+            return $this->owner;
+        } elseif (Auth::id() == $this->owner_id) {
+            return $this->tenant;
+        }
+        return null;
+    }
+
+    // Untuk menghitung pesan yang belum dibaca oleh user saat ini
+    public function unreadMessagesCount()
     {
         return $this->messages()
-                    ->where('sender_id', '!=', $userId)
-                    ->where('is_read', false)
+                    ->where('sender_id', '!=', Auth::id())
+                    ->whereNull('read_at')
                     ->count();
     }
 
-    /**
-     * Get the other participant in chat
-     */
-    public function getOtherParticipant($currentUserId)
-    {
-        if ($this->tenant_id == $currentUserId) {
-            return $this->owner;
-        }
-        return $this->tenant;
-    }
-
-    /**
-     * Check if user is participant of this chat room
-     */
-    public function isParticipant($userId)
-    {
-        return $this->tenant_id == $userId || $this->owner_id == $userId;
-    }
-
-    /**
-     * Scope untuk filter chat rooms berdasarkan user
-     */
-    public function scopeForUser($query, $userId)
-    {
-        return $query->where('tenant_id', $userId)
-                     ->orWhere('owner_id', $userId);
-    }
+     // Accessor untuk memperbarui updated_at chat_room saat ada pesan baru
+     public function touchLastActivity()
+     {
+         $this->touch(); // Ini akan memperbarui kolom updated_at di chat_rooms
+     }
 }
-
-?>

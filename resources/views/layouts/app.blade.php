@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
+    @livewireStyles
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -22,13 +23,12 @@
 </head>
 <body class="font-sans antialiased">
     <!-- Navbar -->
-    @stack('scripts')
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
         @if (request()->routeIs('kos.show'))
             <a class="navbar-brand" href="{{ route('dashboard') }}">Lihat Semua Kos</a>
         @else
-            <a class="navbar-brand" href="{{ route('user_profile.index') }}">User Profile</a>
+            <a class="navbar-brand" href="{{ route('profile.edit') }}">User Profile</a>
         @endif
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
@@ -36,49 +36,6 @@
             </button>
         </div>
     </nav>
-
-    <!-- Tambahkan ini di navigation bar -->
-    @stack('scripts')
-    <li class="nav-item">
-        <a class="nav-link position-relative" href="{{ route('chat.index') }}">
-            <i class="fas fa-comments"></i>
-            Chat
-            <span id="chat-notification-badge" 
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none">
-                0
-            </span>
-        </a>
-    </li>
-
-    <!-- Script untuk update notification badge -->
-    @stack('scripts')
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        updateChatNotificationBadge();
-        
-        // Update setiap 30 detik
-        setInterval(updateChatNotificationBadge, 30000);
-    });
-
-    function updateChatNotificationBadge() {
-        fetch('/api/chat/notification-count')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const badge = document.getElementById('chat-notification-badge');
-                    const count = data.data.unread_count;
-                    
-                    if (count > 0) {
-                        badge.textContent = count > 99 ? '99+' : count;
-                        badge.classList.remove('d-none');
-                    } else {
-                        badge.classList.add('d-none');
-                    }
-                }
-            })
-            .catch(error => console.error('Error updating notification badge:', error));
-    }
-    </script>
 
     <!-- Banner -->
     <x-banner />
@@ -106,9 +63,50 @@
     <!-- Modals & Scripts -->
     @stack('modals')
     @livewireScripts
+
+    <script>
+        function updateChatNotificationBadge() {
+            // Pastikan URL fetch ini benar, jika Anda menggunakan routes/api.php, mungkin menjadi '/api/chat/notification-count'
+            fetch("{{ route('api.chat.notificationCount') }}") // Menggunakan named route API
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success && data.data && typeof data.data.unread_count !== 'undefined') {
+                        const badge = document.getElementById('chat-notification-badge');
+                        const count = data.data.unread_count;
+
+                        if (badge) { // Pastikan elemen badge ada
+                            if (count > 0) {
+                                badge.textContent = count > 99 ? '99+' : count;
+                                badge.classList.remove('d-none');
+                            } else {
+                                badge.classList.add('d-none');
+                            }
+                        }
+                    } else if (data.error) {
+                        console.error('Error fetching notification count:', data.error);
+                    }
+                })
+                .catch(error => console.error('Error updating notification badge:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Panggil sekali saat halaman dimuat jika pengguna sudah login
+            @auth
+                updateChatNotificationBadge();
+                // Update setiap 30 detik
+                setInterval(updateChatNotificationBadge, 30000); // 30000 ms = 30 detik
+            @endauth
+        });
+    </script>
     @stack('scripts')
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @livewireScripts
 </body>
 </html>

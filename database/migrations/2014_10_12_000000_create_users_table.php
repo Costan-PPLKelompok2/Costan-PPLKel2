@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('profile_photo_path', 2048)->nullable();
             
             // Menambahkan price sesuai dengan model
-            $table->decimal('price', 12, 2)->nullable(); // Menambahkan field price
+            $table->string('price')->nullable();          // Menjadi ini
             
             // Preferensi pencarian sesuai model
             $table->string('preferred_location')->nullable();

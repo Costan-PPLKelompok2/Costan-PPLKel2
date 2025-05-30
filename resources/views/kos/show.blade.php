@@ -60,6 +60,41 @@
       </div>
     </div>
 
+    {{-- Tombol Chat Floating Action Button (FAB) --}}
+    @auth
+    @if(Auth::id() !== $kos->user_id) {{-- Tampilkan hanya jika user BUKAN pemilik kos ini --}}
+      <a href="{{ route('kos.initiateChat', ['kosId' => $kos->id]) }}"
+               title="Chat dengan Pemilik Kos"
+               style="position: fixed; z-index: 30; bottom: 24px; right: 24px;" {{-- Menggunakan pixel, 24px ~ 1.5rem (Tailwind unit 6) --}}
+                                                                                {{-- Untuk 32px ~ 2rem (Tailwind unit 8), gunakan bottom: 32px; left: 32px; --}}
+               class="inline-flex items-center justify-center px-5 py-3 
+                      bg-blue-600 dark:bg-blue-700 text-white text-sm font-medium rounded-full shadow-xl 
+                      hover:bg-blue-700 dark:hover:bg-blue-800 
+                      focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 
+                      transition ease-in-out duration-150">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zm-4 0H9v2h2V9z" clip-rule="evenodd" />
+                </svg>
+                <span>Chat</span>
+            </a>
+        @endif
+    @else {{-- Jika user belum login, mungkin tampilkan tombol login atau tidak sama sekali --}}
+    <a href="{{ route('login') }}?redirect={{ url()->current() }}"
+           title="Login untuk Chat"
+           style="position: fixed; z-index: 30; bottom: 24px; right: 24px;" {{-- Menggunakan pixel --}}
+           class="inline-flex items-center justify-center px-5 py-3 
+                  bg-gray-500 dark:bg-gray-600 text-white text-sm font-medium rounded-full shadow-xl 
+                  hover:bg-gray-600 dark:hover:bg-gray-700 
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 dark:focus:ring-offset-gray-800 
+                  transition ease-in-out duration-150">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                 <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zm-4 0H9v2h2V9z" clip-rule="evenodd" />
+            </svg>
+            <span>Login</span>
+        </a>
+    @endauth
+    {{-- Akhir Tombol Chat FAB --}}
+
   </div>
 </div>
 @endsection

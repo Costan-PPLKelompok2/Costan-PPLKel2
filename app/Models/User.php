@@ -28,11 +28,12 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'phone_number',
+        'role',
+        'phone',
         'address',
         'profile_photo_path',
         'search_preferences',
-        'price_range',
+        'price',
         'preferred_location',
         'preferred_kos_type',
         'preferred_facilities',
@@ -59,7 +60,28 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'search_preferences' => 'array', 
-        'price_range' => 'decimal:2',
+        'preferred_facilities' => 'array',
     ];
 
+    public function chatRoomsAsTenant()
+    {
+        return $this->hasMany(ChatRoom::class, 'tenant_id');
+    }
+
+    public function chatRoomsAsOwner()
+    {
+        return $this->hasMany(ChatRoom::class, 'owner_id');
+    }
+
+    public function messagesSent()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    // Menggabungkan semua chat room dimana user terlibat
+    public function allChatRooms()
+    {
+        return ChatRoom::where('tenant_id', $this->id)
+                    ->orWhere('owner_id', $this->id);
+    }
 }

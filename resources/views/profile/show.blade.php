@@ -6,6 +6,13 @@
     </x-slot>
 
     <div>
+            <form action="{{ route('profile.photo.update') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('POST') // Sebaiknya POST atau PUT/PATCH khusus untuk update
+                <input type="file" name="photo" class="form-control" id="photo" required>
+                <button type="submit" class="btn btn-primary">Simpan Foto</button>
+            </form>
+            
             <!-- Form untuk Update Foto Profil -->
             <div class="mt-10 sm:mt-0">
                 @include('profile.partials.profile-photo-form') <!-- Form Update Foto Profil -->

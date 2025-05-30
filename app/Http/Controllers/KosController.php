@@ -120,7 +120,7 @@ class KosController extends Controller
                                         ->first();
             }
 
-            return view('kos.detail', compact('kos', 'existingChatRoom'));
+            return view('kos.show', compact('kos', 'existingChatRoom'));
         } catch (\Exception $e) {
             return redirect()->route('kos.index')->with('error', 'Kos tidak ditemukan.');
         }
@@ -255,6 +255,7 @@ class KosController extends Controller
     /**
      * Inisiasi chat dengan pemilik kos dari halaman detail kos
      */
+    // App\Http\Controllers\KosController.php
     public function initiateChatWithOwner($kosId)
     {
         try {
@@ -265,29 +266,30 @@ class KosController extends Controller
             }
 
             $tenantId = Auth::id();
-            $ownerId = $kos->user_id;
+            $ownerId = $kos->user_id; // Atau $kos->pemilik->id jika relasi sudah diubah dan itu yang benar
 
             if ($tenantId == $ownerId) {
                 return redirect()->back()->with('error', 'Anda tidak dapat mengirim pesan ke diri sendiri.');
             }
 
-            $chatRoom = ChatRoom::where('kos_id', $kosId)
-                               ->where('tenant_id', $tenantId)
-                               ->where('owner_id', $ownerId)
-                               ->first();
-
-            if (!$chatRoom) {
-                $chatRoom = ChatRoom::create([
+            // Cari atau buat ChatRoom
+            $chatRoom = ChatRoom::firstOrCreate(
+                [
                     'kos_id' => $kosId,
                     'tenant_id' => $tenantId,
                     'owner_id' => $ownerId
-                ]);
-            }
+                ]
+                // Tidak perlu array kedua jika hanya ingin mencari atau membuat dengan parameter di atas
+            );
 
-            return redirect()->route('chat.room', $chatRoom->id)
-                           ->with('success', 'Chat room berhasil dibuka.');
+            // Arahkan ke halaman chat (pastikan nama route konsisten)
+            return redirect()->route('chat.show', $chatRoom->id) 
+                            ->with('success', 'Chat room berhasil dibuka. Anda dapat mulai mengirim pesan.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Kos tidak ditemukan.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat membuka chat.');
+            // Log error $e->getMessage()
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat membuka chat: ' . $e->getMessage());
         }
     }
 
