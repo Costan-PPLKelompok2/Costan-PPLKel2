@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Message extends Model
 {
@@ -14,10 +15,12 @@ class Message extends Model
         'sender_id',
         'body',
         'read_at',
+        'edited_at',
     ];
 
     protected $casts = [
         'read_at' => 'datetime',
+        'edited_at' => 'datetime',
     ];
 
     public function chatRoom()
@@ -34,5 +37,10 @@ class Message extends Model
     public function scopeUnread($query)
     {
         return $query->whereNull('read_at');
+    }
+
+    public function canBeModifiedBy(User $user)
+    {
+        return $this->sender_id === $user->id;
     }
 }

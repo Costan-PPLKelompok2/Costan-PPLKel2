@@ -34,7 +34,7 @@
                             </h3>
                             <div class="mt-2">
                                 <p class="text-sm text-gray-500 dark:text-black-400">
-                                    Untuk memberikan pengalaman terbaik, mohon pilih peran utama Anda di platform kami:
+                                    Untuk memberikan pengalaman terbaik, mohon pilih peran Anda di platform kami:
                                 </p>
                             </div>
                         </div>
@@ -56,11 +56,10 @@
         {{-- Akhir Pop-up Modal --}}
 
 
-        {{-- Konten Halaman Profil Utama Anda --}}
+        {{-- Konten Halaman Profil Utama --}}
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
             {{-- Form untuk Update Foto Profil --}}
-            {{-- Jika profile-photo-form adalah komponen Livewire, ganti dengan <livewire:profile-photo-form /> --}}
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg"> {{-- INI DIA! --}}
                 <div class="max-w-xl">
                      @if(class_exists(\App\Livewire\ProfilePhotoForm::class))
                         <livewire:profile-photo-form />

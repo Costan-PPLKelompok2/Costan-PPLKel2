@@ -67,6 +67,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update'); 
     Route::post('/profile/set-role', [ProfileController::class, 'setRole'])->name('profile.setRole');
 
+
+
     // Kos management
     Route::get('/kos',               [KosController::class, 'index'])->name('kos.index');
     Route::get('/my-kos',            [KosController::class, 'manage'])->name('kos.manage');
@@ -116,10 +118,22 @@ Route::middleware('auth:sanctum')->group(function () { // Atau middleware auth A
         Route::post('/send-message', [ChatController::class, 'sendMessage']);
         Route::get('/notification-count', [ChatController::class, 'getNotificationCount'])->name('notificationCount');
         Route::post('/mark-room-read/{chatRoom}', [ChatController::class, 'markRoomAsRead']);
+        Route::post('/notifications/mark-read', [ChatCostController::class, 'markAsRead'])->name('notifications.mark-read');
         Route::delete('/delete-room/{chatRoom}', [ChatController::class, 'deleteRoom']);
     });
 });
 
+Route::middleware(['auth'])->group(function () {
+    // ... (route otentikasi Anda yang lain)
 
-// Notification routes
-Route::post('/notifications/mark-read', [ChatCostController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{chatRoom}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{chatRoom}/messages', [ChatController::class, 'store'])->name('chat.store');
+    Route::get('/chat/notifications/count', [ChatController::class, 'getNotificationCount'])->name('chat.notifications.count');
+
+    // Route baru untuk edit dan hapus pesan
+    Route::put('/chat/messages/{message}', [ChatController::class, 'updateMessage'])->name('chat.message.update');
+    Route::delete('/chat/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chat.message.destroy');
+});
+
+
