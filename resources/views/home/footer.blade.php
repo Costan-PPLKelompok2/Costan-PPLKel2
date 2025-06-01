@@ -20,7 +20,7 @@
 						<div class="footer-widget">
 							<h4>Sprint Time</h4>
 							<p class="list-time">
-								<p>Sprint 1: 
+								<p>Sprint 1: April 14 - May 5
                                 <br> Sprint 2: May 6 - May 27
                                 </p>
                             </p>

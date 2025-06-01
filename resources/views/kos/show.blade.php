@@ -1,4 +1,3 @@
-{{-- resources/views/kos/show.blade.php --}}
 @extends('layouts.navbar')
 
 @section('content')
@@ -12,12 +11,12 @@
   <div class="row">
     {{-- Photo + Details Section --}}
     <div class="col-lg-6 col-md-12 mb-4">
-      <div class="card shadow-sm h-100">
+      <div class="card shadow h-100">
         <div class="card-img-top position-relative overflow-hidden" style="height: 300px;">
           <img
             src="{{ $kos->foto ? asset('storage/'.$kos->foto) : asset('images/default.jpg') }}"
             alt="{{ $kos->nama_kos }}"
-            class="img-fluid w-100 h-100"
+            class="img-fluid w-100 h-100 rounded-top-custom"
             style="object-fit: cover;"
           >
         </div>
@@ -45,23 +44,29 @@
           </div>
           
           <div class="mb-3">
-            <h6 class="text-muted mb-2">Fasilitas</h6>
-            <ul class="list-unstyled">
-              @foreach(explode(',', $kos->fasilitas) as $f)
-                <li class="mb-1">
-                  <i class="fa fa-check-circle text-success mr-2"></i>
-                  <span class="text-dark">{{ trim($f) }}</span>
-                </li>
-              @endforeach
-            </ul>
-          </div>
+              <h6 class="text-muted mb-2">Fasilitas</h6>
+              <div class="row">
+                @foreach(array_chunk(explode(',', $kos->fasilitas), ceil(count(explode(',', $kos->fasilitas)) / 2)) as $chunk)
+                  <div class="col-6">
+                    <ul class="list-unstyled">
+                      @foreach($chunk as $f)
+                        <li class="mb-1">
+                          <i class="fa fa-check-circle text-success mr-2"></i>
+                          <span class="text-dark">{{ trim($f) }}</span>
+                        </li>
+                      @endforeach
+                    </ul>
+                  </div>
+                @endforeach
+              </div>
+            </div>
         </div>
       </div>
     </div>
 
     {{-- Map Section --}}
     <div class="col-lg-6 col-md-12 mb-4">
-      <div class="card shadow-sm h-100">
+      <div class="card shadow h-100">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0 text-dark">
             <i class="fa fa-map-marker-alt text-primary mr-2"></i>
@@ -80,7 +85,7 @@
         <div class="card-body p-0 position-relative">
           @if($kos->latitude && $kos->longitude)
             {{-- Map Container --}}
-            <div id="map" style="height: 800px; width: 100%;"></div>
+            <div id="map" style="height: 100%; width: 100%;"></div>
             
             {{-- Loading Indicator --}}
             <div id="loadingIndicator" class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001; display: none;">
@@ -93,7 +98,7 @@
             </div>
           @else
             {{-- No Location Message --}}
-            <div class="d-flex align-items-center justify-content-center" style="height: 400px; background-color: #f8f9fa;">
+            <div class="d-flex align-items-center justify-content-center" style="height: 100%; background-color: #f8f9fa;">
               <div class="text-center">
                 <i class="fa fa-map-marker-alt fa-3x text-muted mb-3"></i>
                 <h5 class="text-muted mb-2">Lokasi Tidak Tersedia</h5>
@@ -136,8 +141,8 @@
               Hubungi Pemilik
             </button>
             <button class="btn btn-outline-primary btn-lg">
-              <i class="fa fa-bookmark mr-2"></i>
-              Simpan
+              <i class="fa fa-heart mr-2"></i>
+              Favorite
             </button>
           @else
             <button class="btn btn-secondary btn-lg" disabled>
@@ -153,6 +158,10 @@
 
 {{-- Custom Styles --}}
 <style>
+.rounded-top-custom {
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
+}
 .card {
   border-radius: 12px;
   border: none;

@@ -39,6 +39,7 @@
             <div class="collapse navbar-collapse" id="navbar-menu">
                 <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
                     <li class="nav-item {{ Route::is('home.index') ? 'active' : '' }}"><a class="nav-link" href="{{route('redirect')}}">Home</a></li>
+                    <li class="nav-item {{ Route::is('home.daftarkos') ? 'active' : '' }}"><a class="nav-link" href="{{route('home.daftarkos')}}">Daftar Kos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Favorite</a></li>
                     <!-- <li class="dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Profile</a>
@@ -63,8 +64,20 @@
                 @if (Route::has('login'))
                     @auth
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle bg-secondary text-white rounded px-3 py-1" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a class="d-flex align-items-center justify-content-center nav-link dropdown-toggle border border-secondary rounded px-3 py-1" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                                 {{ Auth::user()->name }}
+                                @php
+                                    $user = Auth::user();
+                                    $initial = strtoupper(substr($user->name, 0, 1));
+                                @endphp
+
+                                @if ($user->foto)
+                                    <img src="{{ asset('storage/' . $user->foto) }}" alt="Foto Profil" class="rounded-circle" width="35" height="35" style="object-fit: cover; margin-left: 10px;">
+                                @else
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; font-weight: bold; margin-left: 10px;">
+                                        {{ $initial }}
+                                    </div>
+                                @endif
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
                                 <span class="dropdown-item-text text-muted small pl-3">
@@ -80,7 +93,7 @@
                                 <div class="dropdown-divider"></div>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="dropdown-item">{{ __('Log Out') }}</button>
+                                    <button class="dropdown-item" type="submit">{{ __('Log Out') }}</button>
                                 </form>
                             </div>
                         </li>
@@ -107,4 +120,35 @@
             {{ $slot ?? '' }}
         </main>
     </div>
+
+    
+    <!-- Start Footer  -->
+    @include('home.footer')
+    <!-- End Footer  -->
+
+    <!-- Start copyright  -->
+    <div class="footer-copyright">
+        <p class="footer-company">All Rights Reserved. &copy; 2025 Cost'an Design By :
+            PPL Kelompok 2</p>
+    </div>
+    <!-- End copyright  -->
+
+    <a href="#" id="back-to-top" title="Back to top" style="">&uarr;</a>
+
+    <!-- ALL JS FILES -->
+    <script src="{{ URL::asset("js/jquery-3.2.1.min.js")}}"></script>
+    <script src="{{ URL::asset("js/popper.min.js")}}"></script>
+    <script src="{{ URL::asset("js/bootstrap.min.js")}}"></script>
+    <!-- ALL PLUGINS -->
+    <script src="{{ URL::asset("js/jquery.superslides.min.js")}}"></script>
+    <script src="{{ URL::asset("js/bootstrap-select.js")}}"></script>
+    <script src="{{ URL::asset("js/inewsticker.js")}}"></script>
+    <script src="{{ URL::asset("js/bootsnav.js")}}"></script>
+    <script src="{{ URL::asset("js/images-loded.min.js")}}"></script>
+    <script src="{{ URL::asset("js/isotope.min.js")}}"></script>
+    <script src="{{ URL::asset("js/owl.carousel.min.js")}}"></script>
+    <script src="{{ URL::asset("js/baguetteBox.min.js")}}"></script>
+    <script src="{{ URL::asset("js/form-validator.min.js")}}"></script>
+    <script src="{{ URL::asset("js/contact-form-script.js")}}"></script>
+    <script src="{{ URL::asset("js/custom.js")}}"></script>
 </body>

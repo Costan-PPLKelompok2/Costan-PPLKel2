@@ -26,6 +26,7 @@ use App\Http\Controllers\ReviewController;
 // 1. Public landing & listing
 Route::get('/', [HomeController::class, 'redirect'])->name('redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+Route::get('/daftar-kos', [HomeController::class, 'daftarKos'])->name('home.daftarkos');
 
 // 2. Full‐filter search page
 Route::get('/kos/search', [KosController::class, 'search'])->name('kos.search');
