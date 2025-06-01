@@ -15,7 +15,7 @@ use App\Http\Controllers\KosController;
 use App\Http\Controllers\PemilikController;
 use App\Http\Controllers\KosReviewController;
 use App\Http\Controllers\ReviewController;
-
+use App\Http\Controllers\OwnerReviewController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -82,6 +82,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/review/{id}/edit',       [ReviewController::class, 'edit'])->name('review.edit');
     Route::put('/review/{id}',            [ReviewController::class, 'update'])->name('review.update');
     Route::delete('/review/{id}',         [ReviewController::class, 'destroy'])->name('review.destroy');
+
+    // Owner review routes
+    Route::post('/owner-reviews', [OwnerReviewController::class, 'store'])->name('owner-reviews.store');
+    Route::get('/owner/{owner}/reviews', [OwnerReviewController::class, 'showReviewsForOwner'])->name('owner-reviews.show');
+    Route::get('/my-owner-reviews', [OwnerReviewController::class, 'myReviews'])->name('owner-reviews.my');
 });
 
 // 7. Review dummy page
@@ -94,19 +99,3 @@ Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
 
 // 9. User profile resource route (non-auth specific)
 Route::resource('user_profile', UsersController::class);
-
-//10. Review pemilik kos
-Route::middleware('auth')->group(function () {
-    Route::get('/owner-reviews/{owner}', [OwnerReviewController::class, 'showOwnerReviews']);
-    Route::post('/owner-reviews', [OwnerReviewController::class, 'store']);
-    Route::get('/my-owner-reviews', [OwnerReviewController::class, 'index']);
-});
-
-use App\Http\Controllers\OwnerReviewController;
-
-Route::middleware(['auth'])->group(function () {
-    Route::post('/owner-reviews', [OwnerReviewController::class, 'store'])->name('owner-reviews.store');
-    Route::get('/owner/{owner}/reviews', [OwnerReviewController::class, 'showReviewsForOwner'])->name('owner-reviews.show');
-    Route::get('/my-owner-reviews', [OwnerReviewController::class, 'myReviews'])->name('owner-reviews.my');
-});
-
