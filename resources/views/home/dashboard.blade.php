@@ -1,23 +1,10 @@
+@extends('layouts.navbar')
+@section('content')
+
 <!DOCTYPE html>
 <html lang="en">
 <!-- Basic -->
-<head>
-@include('home.head')
-</head>
-
 <body>
-    <!-- Start Main Top -->
-    <!-- @include('home.navinfo') -->
-    <!-- End Main Top -->
-
-    <!-- Start Main Top -->
-    <header class="main-header">
-        <!-- Start Navigation -->
-        @include("home.navbar")
-        <!-- End Navigation -->
-    </header>
-    <!-- End Main Top -->
-
     <!-- Start Top Search -->
     <div class="top-search">
         <div class="container">
@@ -103,3 +90,5 @@
 </body>
 
 </html>
+
+@endsection
