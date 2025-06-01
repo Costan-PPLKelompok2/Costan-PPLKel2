@@ -44,3 +44,5 @@ class OwnerReviewController extends Controller
     return view('owner_reviews.index', compact('owner', 'reviews'));
 }
 }
+
+//update
