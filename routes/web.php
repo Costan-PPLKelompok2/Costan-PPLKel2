@@ -16,6 +16,7 @@ use App\Http\Controllers\PemilikController;
 use App\Http\Controllers\KosReviewController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\OwnerReviewController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -83,10 +84,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/review/{id}',            [ReviewController::class, 'update'])->name('review.update');
     Route::delete('/review/{id}',         [ReviewController::class, 'destroy'])->name('review.destroy');
 
-    // Owner review routes
-    Route::post('/owner-reviews', [OwnerReviewController::class, 'store'])->name('owner-reviews.store');
-    Route::get('/owner/{owner}/reviews', [OwnerReviewController::class, 'showReviewsForOwner'])->name('owner-reviews.show');
-    Route::get('/my-owner-reviews', [OwnerReviewController::class, 'myReviews'])->name('owner-reviews.my');
+    Route::get('/owner-review/{ownerId}', [OwnerReviewController::class, 'create'])->name('owner-reviews.create');
+    Route::post('/owner-review', [OwnerReviewController::class, 'store'])->name('owner-reviews.store');
+    Route::get('/owner-review/show/{ownerId}', [OwnerReviewController::class, 'show'])->name('owner-reviews.show');
 });
 
 // 7. Review dummy page
