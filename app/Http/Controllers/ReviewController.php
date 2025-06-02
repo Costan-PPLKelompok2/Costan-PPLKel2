@@ -12,8 +12,8 @@ class ReviewController extends Controller
     // 🔹 CREATE FORM
     public function create($id)
     {
-        $kos = Kos::findOrFail($id);
-        return view('review.create', compact('kos'));
+        $kos = Kos::findOrFail($id); // Ambil data kos dari database
+        return view('review.create', compact('kos')); // kirim ke view
     }
 
     // 🔹 STORE REVIEW
@@ -30,6 +30,7 @@ class ReviewController extends Controller
             'kos_id' => $request->kos_id,
             'rating' => $request->rating,
             'comment' => $request->comment,
+            'reviewer_id' => Auth::id(),
         ]);
 
         return redirect()->back()->with('success', 'Review berhasil ditambahkan!');
@@ -107,4 +108,6 @@ class ReviewController extends Controller
 
         return redirect()->back()->with('success', 'Review berhasil dihapus!');
     }
+
+    
 }

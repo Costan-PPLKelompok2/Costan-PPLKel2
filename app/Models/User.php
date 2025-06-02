@@ -37,6 +37,7 @@ class User extends Authenticatable
         'preferred_kos_type',
         'preferred_facilities',
         'password',
+        'role',
     ];
 
     /**
@@ -61,5 +62,18 @@ class User extends Authenticatable
         'search_preferences' => 'array', 
         'price_range' => 'decimal:2',
     ];
+
+    // User sebagai pemilik
+public function reviewsDiterima()
+{
+    return $this->hasMany(OwnerReview::class, 'pemilik_id');
+}
+
+// User sebagai penyewa
+public function reviewsDiberikan()
+{
+    return $this->hasMany(OwnerReview::class, 'penyewa_id');
+}
+
 
 }
