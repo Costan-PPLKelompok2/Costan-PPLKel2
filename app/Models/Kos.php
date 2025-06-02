@@ -21,6 +21,8 @@ class Kos extends Model
         'foto',
         'status_ketersediaan',
         'views',
+        'latitude',
+        'longitude',
     ];
 
     protected $casts = [

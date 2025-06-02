@@ -17,6 +17,8 @@
             <div class="card-body">
                 <form method="POST" action="{{ route('kos.store') }}" enctype="multipart/form-data">
                     @csrf
+                    <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
+                    <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
 
                     <div class="mb-3">
                         <label for="nama_kos" class="form-label">Nama Kos</label>
