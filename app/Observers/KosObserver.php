@@ -1,5 +1,8 @@
 <?php
 
+// app/Observers/KosObserver.php
+namespace App\Observers;
+
 use App\Models\Kos;
 use App\Notifications\KosUpdatedNotification;
 

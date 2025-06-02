@@ -6,6 +6,7 @@ use App\Http\Controllers\{
     PemilikController,
     ProfileController,
     KosController,
+    FaqController,
     ReviewController,
     OwnerReviewController,
     ChatController,
@@ -37,6 +38,11 @@ Route::get('/kos/{id_kos}', [KosController::class, 'show'])->whereNumber('id_kos
 Route::get('/dashboard', fn () => redirect()->route('redirect'))
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+// 6. FAQ page
+Route::get('/faq', [FaqController::class, 'show'])->name('faq.show');
+Route::post('/faq/help', [FaqController::class, 'sendHelpRequest'])->name('faq.help');
+
 
 // 6. Authentication
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
@@ -118,3 +124,12 @@ Route::get('/review-dummy', fn () => view('review.dummy'))->name('review.dummy')
 
 // 9. Redirect helper
 Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/faq/manage', [FaqController::class, 'index'])->name('faq.manage.index');
+    Route::get('/admin/faq/create', [FaqController::class, 'create'])->name('faq.manage.create');
+    Route::post('/admin/faq/store', [FaqController::class, 'store'])->name('faq.manage.store');
+    Route::get('/admin/faq/{manage}/edit', [FaqController::class, 'edit'])->name('faq.manage.edit');
+    Route::put('/admin/faq/{manage}', [FaqController::class, 'update'])->name('faq.manage.update');
+    Route::delete('/admin/faq/{manage}', [FaqController::class, 'destroy'])->name('faq.manage.destroy');
+});

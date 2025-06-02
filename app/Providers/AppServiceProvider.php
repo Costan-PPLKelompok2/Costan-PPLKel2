@@ -21,6 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Kos::observe(\KosObserver::class);
+        Kos::observe(KosObserver::class);
     }
 }
