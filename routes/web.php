@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     HomeController,
-    UsersController,
+    PemilikController,
     ProfileController,
     KosController,
     ReviewController,
     OwnerReviewController,
     ChatController,
+    NotificationController,
     Auth\RegisteredUserController,
     Auth\AuthenticatedSessionController,
     Auth\PasswordResetLinkController,
@@ -53,6 +54,7 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 
 // 7. Protected routes
 Route::middleware('auth')->group(function () {
+    Route::get('/admin', [PemilikController::class, 'index'])->name('pemilik.dashboard');
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -94,6 +96,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat/notifications/count', [ChatController::class, 'getNotificationCount'])->name('chat.notifications.count');
     Route::put('/chat/messages/{message}', [ChatController::class, 'updateMessage'])->name('chat.message.update');
     Route::delete('/chat/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chat.message.destroy');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
 });
 
 // Chat API (authenticated)
@@ -112,6 +118,3 @@ Route::get('/review-dummy', fn () => view('review.dummy'))->name('review.dummy')
 
 // 9. Redirect helper
 Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
-
-// 10. Public user profile resource
-Route::resource('user_profile', UsersController::class);
