@@ -13,8 +13,6 @@ use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KosController;
-use App\Http\Controllers\PemilikController;
-use App\Http\Controllers\KosReviewController;
 use App\Http\Controllers\ReviewController;
 
 /*
@@ -28,20 +26,25 @@ Route::get('/', [HomeController::class, 'redirect'])->name('redirect');
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 Route::get('/daftar-kos', [HomeController::class, 'daftarKos'])->name('home.daftarkos');
 
-// 2. Full‐filter search page
-Route::get('/kos/search', [KosController::class, 'search'])->name('kos.search');
+// 2. Public kos listing
+Route::get('/kos', [KosController::class, 'index'])
+     ->name('kos.index');
 
-// 3. Public detail (only numeric IDs)
+// 3. Full‐filter search page
+Route::get('/kos/search', [KosController::class, 'search'])
+     ->name('kos.search');
+
+// 4. Public detail view (only numeric IDs)
 Route::get('/kos/{id_kos}', [KosController::class, 'show'])
-    ->whereNumber('id_kos')
-    ->name('kos.show');
+     ->whereNumber('id_kos')
+     ->name('kos.show');
 
-// 4. Protected dashboard shortcut
+// 5. Dashboard redirect shortcut (authenticated & verified)
 Route::get('/dashboard', function () {
     return redirect()->route('redirect');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// 5. Auth routes
+// 6. Authentication (register / login / password / email verification)
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store']);
 
@@ -56,10 +59,13 @@ Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])-
 Route::post('/reset-password', [NewPasswordController::class, 'store'])->name('password.update');
 
 Route::get('/verify-email', EmailVerificationPromptController::class)->name('verification.notice');
-Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)->middleware(['signed'])->name('verification.verify');
-Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])->name('verification.send');
+Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
+     ->middleware('signed')
+     ->name('verification.verify');
+Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+     ->name('verification.send');
 
-// 6. Authenticated routes
+// 7. All routes that require a logged-in user
 Route::middleware('auth')->group(function () {
     // Admin dashboard
     Route::get('/admin', [PemilikController::class, 'index'])->name('admin.index');
@@ -97,11 +103,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('user_profile', UsersController::class);
 });
 
-// 7. Review dummy page
+// 8. A dummy review page for testing
 Route::get('/review-dummy', function () {
     return view('review.dummy');
 })->name('review.dummy');
 
-// 8. Optional redirect route
+// 9. Optional redirect helper
 Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
 
+// 10. Non-auth user profile resource
+Route::resource('user_profile', UsersController::class);
