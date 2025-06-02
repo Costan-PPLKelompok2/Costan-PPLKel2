@@ -38,6 +38,7 @@ class User extends Authenticatable
         'preferred_kos_type',
         'preferred_facilities',
         'password',
+        'role',
     ];
 
     /**
@@ -83,5 +84,17 @@ class User extends Authenticatable
     {
         return ChatRoom::where('tenant_id', $this->id)
                     ->orWhere('owner_id', $this->id);
+    }
+
+    // User sebagai pemilik
+    public function reviewsDiterima()
+    {
+        return $this->hasMany(OwnerReview::class, 'pemilik_id');
+    }
+
+    // User sebagai penyewa
+    public function reviewsDiberikan()
+    {
+        return $this->hasMany(OwnerReview::class, 'penyewa_id');
     }
 }
