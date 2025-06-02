@@ -7,6 +7,7 @@ use App\Models\KosView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\LocationHelper;
 
 class KosController extends Controller
 {
@@ -190,6 +191,11 @@ class KosController extends Controller
             'status_ketersediaan' => 'nullable|in:0,1',
         ]);
 
+        $koordinat = LocationHelper::geocodeAddress($data['alamat']);
+
+        $data['latitude'] = $koordinat['latitude'];
+        $data['longitude'] = $koordinat['longitude'];
+
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('foto_kos', 'public');
         }
@@ -219,6 +225,17 @@ class KosController extends Controller
             'foto' => 'nullable|image|max:2048',
             'status_ketersediaan' => 'nullable|in:0,1',
         ]);
+        
+        $koordinat = LocationHelper::geocodeAddress($data['alamat']);
+        
+        if (!$koordinat) {
+            return redirect()->back()->withErrors(['alamat' => 'Gagal mendapatkan koordinat untuk alamat yang diberikan.']);
+        }
+        else{
+            $data['latitude'] = $koordinat['latitude'];
+            $data['longitude'] = $koordinat['longitude'];
+        }
+
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('foto_kos', 'public');
