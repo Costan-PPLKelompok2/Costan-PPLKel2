@@ -9,12 +9,56 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-
-        $kosList = Kos::paginate(12)->withQueryString();
-        $kos = Kos::all();
         $kosPopuler = Kos::orderBy('views', 'desc')->take(3)->get();
-      
-        return view('home.dashboard', compact('kosPopuler', 'kos','kosList'));        
+
+        $filter = $request->input('filter', 'all');
+        $query = Kos::query();
+        
+        switch ($filter) {
+            case 'latest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'popular':
+                $query->orderBy('views', 'desc');
+                break;
+            case 'price_low':
+                $query->orderBy('harga', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('harga', 'desc');
+                break;
+            default:
+                break;
+            }
+        $kost = $query->get();
+        return view('home.dashboard', compact('kosPopuler', 'kost'));        
+    }
+
+    public function daftarKos(Request $request)
+    {
+        $kosPopuler = Kos::orderBy('views', 'desc')->take(3)->get();
+        $filter = $request->input('filter', 'all');
+        $query = Kos::query();
+        
+        switch ($filter) {
+            case 'latest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'popular':
+                $query->orderBy('views', 'desc');
+                break;
+            case 'price_low':
+                $query->orderBy('harga', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('harga', 'desc');
+                break;
+            default:
+                $query->inRandomOrder();
+                break;
+            }
+        $kost = $query->get();
+        return view('home.kos', compact('kost', 'kosPopuler'));
     }
 
 

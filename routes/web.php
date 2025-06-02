@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\LocationHelper;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -20,9 +21,10 @@ use App\Http\Controllers\ReviewController;
 |--------------------------------------------------------------------------
 */
 
-// 1. Public landing page
-Route::get('/', [HomeController::class, 'index'])
-     ->name('dashboard.index');
+// 1. Public landing & listing
+Route::get('/', [HomeController::class, 'redirect'])->name('redirect');
+Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+Route::get('/daftar-kos', [HomeController::class, 'daftarKos'])->name('home.daftarkos');
 
 // 2. Public kos listing
 Route::get('/kos', [KosController::class, 'index'])
@@ -39,9 +41,8 @@ Route::get('/kos/{id_kos}', [KosController::class, 'show'])
 
 // 5. Dashboard redirect shortcut (authenticated & verified)
 Route::get('/dashboard', function () {
-    return redirect()->route('dashboard.index');
-})->middleware(['auth', 'verified'])
-  ->name('dashboard');
+    return redirect()->route('redirect');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 // 6. Authentication (register / login / password / email verification)
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
@@ -66,29 +67,30 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 
 // 7. All routes that require a logged-in user
 Route::middleware('auth')->group(function () {
-    // Profile management
-    Route::get('/profile',   [ProfileController::class, 'edit'])   ->name('profile.edit');
+    // Admin dashboard
+    Route::get('/admin', [PemilikController::class, 'index'])->name('admin.index');
+
+    // Profile
+    Route::get('/profile',   [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile',[ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Kos CRUD for owners
-    Route::get('/my-kos',         [KosController::class, 'manage']) ->name('kos.manage');
-    Route::get('/kos/create',     [KosController::class, 'create']) ->name('kos.create');
-    Route::post('/kos',           [KosController::class, 'store'])  ->name('kos.store');
-    Route::get('/kos/{id}/edit',  [KosController::class, 'edit'])   ->name('kos.edit');
-    Route::put('/kos/{id}',       [KosController::class, 'update']) ->name('kos.update');
-    Route::delete('/kos/{id}',    [KosController::class, 'destroy'])->name('kos.destroy');
+    // Kos management
+    Route::get('/kos',               [KosController::class, 'index'])->name('kos.index');
+    Route::get('/my-kos',            [KosController::class, 'manage'])->name('kos.manage');
+    Route::get('/kos/create',        [KosController::class, 'create'])->name('kos.create');
+    Route::get('/kos/populer',       [KosController::class, 'populer'])->name('kos.populer');
+    Route::get('/kos/{id}',          [KosController::class, 'show'])->name('kos.show');
+    Route::post('/kos',              [KosController::class, 'store'])->name('kos.store');
+    Route::get('/kos/{id}/edit',     [KosController::class, 'edit'])->name('kos.edit');
+    Route::put('/kos/{id}',          [KosController::class, 'update'])->name('kos.update');
+    Route::delete('/kos/{id}',       [KosController::class, 'destroy'])->name('kos.destroy');
 
-    // Popular listing
-    Route::get('/kos/populer', [KosController::class, 'popular'])->name('kos.populer');
+    // Pemilik dashboard
+    Route::get('/pemilik/dashboard', [PemilikController::class, 'index'])->name('pemilik.dashboard');
+    Route::get('/pemilik/statistik/{id}', [PemilikController::class, 'statistik'])->name('pemilik.statistik');
 
-    // Compare feature
-    Route::post('/kos/{id_kos}/compare-toggle', [KosController::class, 'toggleCompare'])
-     ->name('kos.compare.toggle');
-    Route::get('/kos/compare', [KosController::class, 'comparePage'])
-     ->name('kos.compare');
-
-    // Reviews
+    // Review routes
     Route::get('/kos/{id}/review/create', [ReviewController::class, 'create'])->name('review.create');
     Route::post('/review',                [ReviewController::class, 'store'])->name('review.store');
     Route::get('/kos/{id}/reviews',       [ReviewController::class, 'show'])->name('review.show');
@@ -96,6 +98,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/review/{id}/edit',       [ReviewController::class, 'edit'])->name('review.edit');
     Route::put('/review/{id}',            [ReviewController::class, 'update'])->name('review.update');
     Route::delete('/review/{id}',         [ReviewController::class, 'destroy'])->name('review.destroy');
+
+    // User profile management
+    Route::resource('user_profile', UsersController::class);
 });
 
 // 8. A dummy review page for testing
