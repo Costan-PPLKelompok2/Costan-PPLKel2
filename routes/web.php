@@ -87,6 +87,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/owner-review/{ownerId}', [OwnerReviewController::class, 'create'])->name('owner-reviews.create');
     Route::post('/owner-review', [OwnerReviewController::class, 'store'])->name('owner-reviews.store');
     Route::get('/owner-review/show/{ownerId}', [OwnerReviewController::class, 'show'])->name('owner-reviews.show');
+
+    Route::get('/owner-reviews/{id}/edit', [OwnerReviewController::class, 'edit'])->name('owner-reviews.edit');
+    Route::put('/owner-reviews/{id}', [OwnerReviewController::class, 'update'])->name('owner-reviews.update');
+    Route::delete('/owner-reviews/{id}', [OwnerReviewController::class, 'destroy'])->name('owner-reviews.destroy');
 });
 
 // 7. Review dummy page

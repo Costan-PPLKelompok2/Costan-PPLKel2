@@ -192,7 +192,7 @@
                                             </div>
                                         </div>
                                         
-                                        {{-- Report button --}}
+                                        {{-- Action buttons --}}
                                         <div class="dropdown">
                                             <button class="btn btn-link text-muted btn-sm" 
                                                     type="button" 
@@ -200,6 +200,23 @@
                                                 <i class="fas fa-ellipsis-v"></i>
                                             </button>
                                             <ul class="dropdown-menu">
+                                                {{-- Show edit/delete only for review owner --}}
+                                                @if(auth()->check() && auth()->id() === $review->reviewer_id)
+                                                    <li>
+                                                        <a class="dropdown-item" href="{{ route('owner-reviews.edit', $review->id) }}">
+                                                            <i class="fas fa-edit me-1 text-warning"></i>
+                                                            Edit Review
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item text-danger" 
+                                                                onclick="deleteReview({{ $review->id }})">
+                                                            <i class="fas fa-trash me-1"></i>
+                                                            Hapus Review
+                                                        </button>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                @endif
                                                 <li>
                                                     <a class="dropdown-item text-danger" href="#" 
                                                        onclick="reportReview({{ $review->id }})">
@@ -255,6 +272,42 @@
     </div>
 </div>
 
+{{-- Delete Confirmation Modal --}}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Konfirmasi Hapus
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus review ini?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <small>Tindakan ini tidak dapat dibatalkan.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>
+                    Batal
+                </button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>
+                        Hapus Review
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Custom CSS --}}
 <style>
 .avatar img {
@@ -298,6 +351,15 @@
 
 .helpful-buttons .btn {
     border-radius: 20px;
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: #f8d7da;
+    color: #721c24 !important;
 }
 
 @media (max-width: 768px) {
@@ -370,6 +432,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Function untuk delete review
+function deleteReview(reviewId) {
+    const deleteForm = document.getElementById('deleteForm');
+    deleteForm.action = `/owner-reviews/${reviewId}`;
+    
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    deleteModal.show();
+}
 
 // Function untuk mark helpful
 function markHelpful(reviewId, type) {
