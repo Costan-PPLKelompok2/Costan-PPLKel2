@@ -38,4 +38,14 @@ class Kos extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function user() // Ganti 'pemilik' dengan 'user' jika ini yang benar
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function chatRooms()
+    {
+        return $this->hasMany(ChatRoom::class);
+    }
 }

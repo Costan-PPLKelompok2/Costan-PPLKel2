@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kos;
+use App\Models\KosView;
+use App\Models\ChatRoom;
+use App\Models\User_profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -73,14 +76,24 @@ class KosController extends Controller
      */
     public function show($id)
     {
-        $kos = Kos::findOrFail($id);
-        $kos->increment('views');
-        return view('kos.show', compact('kos'));
+        try {
+            $kos = Kos::with(['user', 'reviews.user'])->findOrFail($id);
+            $kos->increment('views');
+
+            $existingChatRoom = null;
+            if (Auth::check()) {
+                $existingChatRoom = ChatRoom::where('kos_id', $id)
+                                        ->where('tenant_id', Auth::id())
+                                        ->where('owner_id', $kos->user_id)
+                                        ->first();
+            }
+
+            return view('kos.show', compact('kos', 'existingChatRoom'));
+        } catch (\Exception $e) {
+            return redirect()->route('kos.index')->with('error', 'Kos tidak ditemukan.');
+        }
     }
 
-    /**
-     * Halaman search lengkap
-     */
     public function search(Request $request)
     {
         // bangun daftar fasilitas unik
@@ -239,5 +252,120 @@ class KosController extends Controller
         $kos = Kos::where('user_id', Auth::id())->findOrFail($id);
         $kos->delete();
         return redirect()->route('kos.index')->with('success','Kos berhasil dihapus!');
+    }
+
+    /**
+     * Inisiasi chat dengan pemilik kos dari halaman detail kos
+     */
+    // App\Http\Controllers\KosController.php
+    public function initiateChatWithOwner($kosId)
+    {
+        try {
+            $kos = Kos::findOrFail($kosId);
+            
+            if (!Auth::check()) {
+                return redirect()->route('login')->with('message', 'Silakan login terlebih dahulu untuk menghubungi pemilik kos.');
+            }
+
+            $tenantId = Auth::id();
+            $ownerId = $kos->user_id; // Atau $kos->pemilik->id jika relasi sudah diubah dan itu yang benar
+
+            if ($tenantId == $ownerId) {
+                return redirect()->back()->with('error', 'Anda tidak dapat mengirim pesan ke diri sendiri.');
+            }
+
+            // Cari atau buat ChatRoom
+            $chatRoom = ChatRoom::firstOrCreate(
+                [
+                    'kos_id' => $kosId,
+                    'tenant_id' => $tenantId,
+                    'owner_id' => $ownerId
+                ]
+                // Tidak perlu array kedua jika hanya ingin mencari atau membuat dengan parameter di atas
+            );
+
+            // Arahkan ke halaman chat (pastikan nama route konsisten)
+            return redirect()->route('chat.show', $chatRoom->id) 
+                            ->with('success', 'Chat room berhasil dibuka. Anda dapat mulai mengirim pesan.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Kos tidak ditemukan.');
+        } catch (\Exception $e) {
+            // Log error $e->getMessage()
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat membuka chat: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get detail kos dengan informasi chat
+     */
+
+    /**
+     * Get kos yang sedang dalam proses chat (untuk pemilik kos)
+     */
+    public function getKosWithActiveChats()
+    {
+        try {
+            $ownerId = Auth::id();
+            
+            $kosWithChats = Kos::where('user_id', $ownerId)
+                              ->whereHas('chatRooms')
+                              ->with(['chatRooms' => function($query) {
+                                  $query->with(['tenant', 'latestMessage'])
+                                        ->orderBy('updated_at', 'desc');
+                              }])
+                              ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $kosWithChats
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data kos dengan chat aktif'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get statistik chat untuk dashboard pemilik kos
+     */
+    public function getChatStatistics()
+    {
+        try {
+            $ownerId = Auth::id();
+            
+            $totalChatRooms = ChatRoom::where('owner_id', $ownerId)->count();
+            $activeChatRooms = ChatRoom::where('owner_id', $ownerId)
+                                     ->where('updated_at', '>=', now()->subDays(30))
+                                     ->count();
+            $unreadMessages = \App\Models\Message::whereHas('chatRoom', function($query) use ($ownerId) {
+                                                     $query->where('owner_id', $ownerId);
+                                                 })
+                                                 ->where('sender_id', '!=', $ownerId)
+                                                 ->where('is_read', false)
+                                                 ->count();
+
+            $mostInquiredKos = Kos::where('user_id', $ownerId)
+                                 ->withCount('chatRooms')
+                                 ->orderBy('chat_rooms_count', 'desc')
+                                 ->limit(5)
+                                 ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'total_chat_rooms' => $totalChatRooms,
+                    'active_chat_rooms' => $activeChatRooms,
+                    'unread_messages' => $unreadMessages,
+                    'most_inquired_kos' => $mostInquiredKos
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil statistik chat'
+            ], 500);
+        }
     }
 }
