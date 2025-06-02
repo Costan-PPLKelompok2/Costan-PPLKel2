@@ -19,10 +19,12 @@ class Kos extends Model
         'harga',
         'fasilitas',
         'foto',
+        'jenis_kos',
+        'durasi_sewa', // Kolom ini sudah ada
     ];
 
     /**
-     * Relasi ke pemilik kos (user)
+     * Get the user that owns the Kos.
      */
     public function pemilik()
     {
@@ -30,10 +32,31 @@ class Kos extends Model
     }
 
     /**
-     * Relasi ke semua user yang memfavoritkan kos ini
+     * The users that have favorited the Kos.
      */
     public function favoriters()
     {
         return $this->belongsToMany(User::class, 'favorites', 'kos_id', 'user_id')->withTimestamps();
+    }
+
+    // Accessor untuk kolom 'durasi_sewa'
+    // Jika di database Anda menyimpan angka (misal: 1, 12)
+    public function getDurasiSewaAttribute($value)
+    {
+        switch ($value) {
+            case 'bulanan': // Jika di DB sudah string 'bulanan'
+                return 'Bulanan';
+            case 'tahunan': // Jika di DB sudah string 'tahunan'
+                return 'Tahunan';
+            case 'mingguan': // Jika di DB sudah string 'mingguan'
+                return 'Mingguan';
+            default:
+                return 'Tidak Tersedia'; // Atau nilai default lainnya
+        }
+    }
+
+        public function reviews()
+    {
+        return $this->hasMany(\App\Models\Review::class);
     }
 }

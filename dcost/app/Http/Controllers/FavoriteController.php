@@ -24,9 +24,29 @@ class FavoriteController extends Controller
         return back()->with('success', 'Kos berhasil dihapus dari favorit.');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $kosFavorit = Auth::user()->favoriteKos()->latest()->get();
+        $user = Auth::user();
+        $search = $request->input('search');
+        $sort = $request->input('sort', 'terbaru');
+
+        $kosFavoritQuery = $user->favoriteKos();
+
+        if ($search) {
+            $kosFavoritQuery->where(function ($query) use ($search) {
+                $query->where('nama_kos', 'like', '%' . $search . '%')
+                    ->orWhere('alamat', 'like', '%' . $search . '%');
+            });
+        }
+
+        if ($sort === 'terlama') {
+            $kosFavoritQuery->orderBy('favorites.created_at', 'asc');
+        } else {
+            $kosFavoritQuery->orderBy('favorites.created_at', 'desc');
+        }
+
+        $kosFavorit = $kosFavoritQuery->get();
+
         return view('favorit.index', compact('kosFavorit'));
     }
 }

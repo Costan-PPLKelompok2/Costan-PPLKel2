@@ -19,12 +19,14 @@ class KosController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_kos' => 'required',
-            'deskripsi' => 'required',
-            'alamat' => 'required',
-            'harga' => 'required|numeric',
-            'fasilitas' => 'required',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Tambahkan aturan mimes
+            'nama_kos' => 'required|string|max:255', // Menambahkan validasi string dan max
+            'deskripsi' => 'required|string',
+            'alamat' => 'required|string|max:255',
+            'harga' => 'required|numeric|min:0', // Menambahkan min:0
+            'fasilitas' => 'required|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'jenis_kos' => 'required|in:putra,putri,campur', // Tambahkan validasi untuk jenis_kos
+            'durasi_sewa' => 'required|in:bulanan,tahunan', // Tambahkan validasi untuk durasi_sewa
         ]);
 
         $fotoPath = $request->file('foto') ? $request->file('foto')->store('foto_kos', 'public') : null;
@@ -37,6 +39,8 @@ class KosController extends Controller
             'harga' => $request->harga,
             'fasilitas' => $request->fasilitas,
             'foto' => $fotoPath,
+            'jenis_kos' => $request->jenis_kos, // Tambahkan ini
+            'durasi_sewa' => $request->durasi_sewa, // Tambahkan ini
         ]);
 
         return redirect()->route('kos.create')->with('success', 'Kos berhasil ditambahkan.');
@@ -55,15 +59,17 @@ class KosController extends Controller
         $kos = \App\Models\Kos::where('user_id', auth()->id())->findOrFail($id);
 
         $request->validate([
-            'nama_kos' => 'required',
-            'deskripsi' => 'required',
-            'alamat' => 'required',
-            'harga' => 'required|numeric',
-            'fasilitas' => 'required',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Tambahkan aturan mimes
+            'nama_kos' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'alamat' => 'required|string|max:255',
+            'harga' => 'required|numeric|min:0',
+            'fasilitas' => 'required|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'jenis_kos' => 'required|in:putra,putri,campur', // Tambahkan validasi untuk jenis_kos
+            'durasi_sewa' => 'required|in:bulanan,tahunan', // Tambahkan validasi untuk durasi_sewa
         ]);
 
-        $data = $request->only(['nama_kos', 'deskripsi', 'alamat', 'harga', 'fasilitas']);
+        $data = $request->only(['nama_kos', 'deskripsi', 'alamat', 'harga', 'fasilitas', 'jenis_kos', 'durasi_sewa']); // Tambahkan 'jenis_kos' dan 'durasi_sewa'
 
         if ($request->hasFile('foto')) {
             $data['foto'] = $request->file('foto')->store('foto_kos', 'public');
@@ -125,7 +131,7 @@ class KosController extends Controller
         // Mengirimkan variabel $kosList, $totalKos, dan $totalPenghuni ke view
         return view('kos.index', compact('kosList', 'totalKos', 'totalPenghuni'));
 
-        
+
     }
     // Halaman eksplorasi kos untuk penyewa
     public function explore()
