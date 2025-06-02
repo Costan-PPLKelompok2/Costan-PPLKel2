@@ -2,7 +2,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-screen-md mx-auto px-4 py-6 flex flex-col h-[calc(100vh-100px)]"> {{-- Batasi lebar container --}}
+<div class="max-w-screen-md mx-auto px-4 py-6 flex flex-col h-[calc(100vh-100px)]">
     <div class="flex flex-col bg-white rounded-lg shadow-xl overflow-hidden h-full">
         @php
             $otherParticipant = $chatRoom->tenant_id == $currentUser->id ? $chatRoom->owner : $chatRoom->tenant;
