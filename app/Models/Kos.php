@@ -21,6 +21,8 @@ class Kos extends Model
         'foto',
         'status_ketersediaan',
         'views',
+        'latitude',
+        'longitude',
     ];
 
     protected $casts = [
@@ -35,5 +37,15 @@ class Kos extends Model
     public function pemilik()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function user() // Ganti 'pemilik' dengan 'user' jika ini yang benar
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function chatRooms()
+    {
+        return $this->hasMany(ChatRoom::class);
     }
 }
