@@ -97,4 +97,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(OwnerReview::class, 'penyewa_id');
     }
+
+    public function favoriteKos()
+    {
+        return $this->belongsToMany(Kos::class, 'favorites')->withTimestamps();
+    }
 }

@@ -3,12 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     HomeController,
-    UsersController,
+    PemilikController,
     ProfileController,
     KosController,
+    FaqController,
     ReviewController,
     OwnerReviewController,
     ChatController,
+    NotificationController,
     Auth\RegisteredUserController,
     Auth\AuthenticatedSessionController,
     Auth\PasswordResetLinkController,
@@ -37,6 +39,11 @@ Route::get('/dashboard', fn () => redirect()->route('redirect'))
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// 6. FAQ page
+Route::get('/faq', [FaqController::class, 'show'])->name('faq.show');
+Route::post('/faq/help', [FaqController::class, 'sendHelpRequest'])->name('faq.help');
+
+
 // 6. Authentication
 Route::get('/register', [RegisteredUserController::class, 'create'])->name('register');
 Route::post('/register', [RegisteredUserController::class, 'store']);
@@ -53,6 +60,7 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 
 // 7. Protected routes
 Route::middleware('auth')->group(function () {
+    Route::get('/admin', [PemilikController::class, 'index'])->name('pemilik.dashboard');
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -94,6 +102,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/chat/notifications/count', [ChatController::class, 'getNotificationCount'])->name('chat.notifications.count');
     Route::put('/chat/messages/{message}', [ChatController::class, 'updateMessage'])->name('chat.message.update');
     Route::delete('/chat/messages/{message}', [ChatController::class, 'destroyMessage'])->name('chat.message.destroy');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
 });
 
 // Chat API (authenticated)
@@ -113,5 +125,11 @@ Route::get('/review-dummy', fn () => view('review.dummy'))->name('review.dummy')
 // 9. Redirect helper
 Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
 
-// 10. Public user profile resource
-Route::resource('user_profile', UsersController::class);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/faq/manage', [FaqController::class, 'index'])->name('faq.manage.index');
+    Route::get('/admin/faq/create', [FaqController::class, 'create'])->name('faq.manage.create');
+    Route::post('/admin/faq/store', [FaqController::class, 'store'])->name('faq.manage.store');
+    Route::get('/admin/faq/{manage}/edit', [FaqController::class, 'edit'])->name('faq.manage.edit');
+    Route::put('/admin/faq/{manage}', [FaqController::class, 'update'])->name('faq.manage.update');
+    Route::delete('/admin/faq/{manage}', [FaqController::class, 'destroy'])->name('faq.manage.destroy');
+});

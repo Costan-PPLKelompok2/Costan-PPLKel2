@@ -48,4 +48,10 @@ class Kos extends Model
     {
         return $this->hasMany(ChatRoom::class);
     }
+
+    public function favoriters()
+    {
+        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+    }
+
 }
