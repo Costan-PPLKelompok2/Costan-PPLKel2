@@ -41,13 +41,6 @@
                     <li class="nav-item {{ Route::is('home.index') ? 'active' : '' }}"><a class="nav-link" href="{{route('redirect')}}">Home</a></li>
                     <li class="nav-item {{ Route::is('home.daftarkos') ? 'active' : '' }}"><a class="nav-link" href="{{route('home.daftarkos')}}">Daftar Kos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Favorite</a></li>
-                    <!-- <li class="dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Profile</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{{ route('user_profile.index') }}">My Account</a></li>
-                            <li><a href="#">Favorite</a></li>
-                        </ul>
-                    </li> -->
                 </ul>
             </div>         
 
@@ -95,6 +88,40 @@
                                     @csrf
                                     <button class="dropdown-item" type="submit">{{ __('Log Out') }}</button>
                                 </form>
+                            </div>
+                        </li>
+                        @php
+                            $user = Auth::user();
+                            $notifications = $user->notifications()->latest()->take(5)->get(); // ambil 5 terakhir
+                        @endphp
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link position-relative" href="#" id="notificationDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-bell"></i>
+                                @if ($notifications->count() > 0)
+                                    <span class="badge badge-danger position-absolute" style="top: -5px; right: -10px;">{{ $notifications->count() }}</span>
+                                @endif
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right p-2" aria-labelledby="notificationDropdown" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                                <h6 class="dropdown-header">Notifikasi</h6>
+
+                                @forelse ($notifications as $notification)
+                                    <div class="dropdown-item d-flex justify-content-between align-items-start text-wrap" id="notif-{{ $notification->id }}">
+                                        <div>
+                                            <strong>{{ $notification->data['sender_name'] ?? 'Notifikasi' }}</strong>: 
+                                            {{ \Illuminate\Support\Str::limit($notification->data['message'] ?? '', 50) }} <br>
+                                            <small class="text-muted">{{ $notification->created_at->diffForHumans() }}</small>
+                                        </div>
+                                        <button class="btn btn-sm btn-link text-danger p-0 ml-2 delete-notification" data-id="{{ $notification->id }}" title="Hapus">
+                                            &times;
+                                        </button>
+                                    </div>
+                                    <div class="dropdown-divider"></div>
+                                @empty
+                                    <span class="dropdown-item text-muted small">Tidak ada notifikasi.</span>
+                                @endforelse
+
+                                <a href="{{ route('notifications.index') }}" class="dropdown-item text-center text-primary small">Lihat semua notifikasi</a>
                             </div>
                         </li>
                     @else
@@ -151,4 +178,27 @@
     <script src="{{ URL::asset("js/form-validator.min.js")}}"></script>
     <script src="{{ URL::asset("js/contact-form-script.js")}}"></script>
     <script src="{{ URL::asset("js/custom.js")}}"></script>
+    <script>
+        $(document).on('click', '.delete-notification', function (e) {
+            e.preventDefault();
+            let notifId = $(this).data('id');
+
+            $.ajax({
+                url: '/notifications/' + notifId,
+                type: 'DELETE',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function () {
+                    $('#notif-' + notifId).fadeOut(300, function () {
+                        $(this).remove();
+                    });
+                },
+                error: function () {
+                    alert('Gagal menghapus notifikasi.');
+                }
+            });
+        });
+    </script>
+
 </body>

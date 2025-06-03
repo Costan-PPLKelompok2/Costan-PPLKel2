@@ -54,7 +54,7 @@ class Kos extends Model
     {
         return $this->hasMany(ChatRoom::class);
     }
-
+  
     /**
      * Relasi ke users yang memfavoritkan kos ini
      */
@@ -79,4 +79,5 @@ class Kos extends Model
                 return 'Tidak Tersedia';
         }
     }
+
 }
