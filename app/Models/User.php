@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,6 +9,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -38,7 +38,6 @@ class User extends Authenticatable
         'preferred_kos_type',
         'preferred_facilities',
         'password',
-        'role',
     ];
 
     /**
@@ -60,9 +59,15 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'search_preferences' => 'array', 
+        'search_preferences' => 'array',
         'preferred_facilities' => 'array',
     ];
+
+    // Relasi favorit kos (penting!)
+    public function favoriteKos(): BelongsToMany
+    {
+        return $this->belongsToMany(Kos::class, 'favorites')->withTimestamps();
+    }
 
     public function chatRoomsAsTenant()
     {

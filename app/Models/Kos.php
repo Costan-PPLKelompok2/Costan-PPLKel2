@@ -19,6 +19,8 @@ class Kos extends Model
         'harga',
         'fasilitas',
         'foto',
+        'jenis_kos',
+        'durasi_sewa',
         'status_ketersediaan',
         'views',
         'latitude',
@@ -29,29 +31,53 @@ class Kos extends Model
         'status_ketersediaan' => 'boolean',
     ];
 
-    public function reviews()
-    {
-        return $this->hasMany(Review::class);
-    }
-  
+    /**
+     * Relasi ke pemilik kos (User)
+     */
     public function pemilik()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function user() // Ganti 'pemilik' dengan 'user' jika ini yang benar
+    /**
+     * Relasi ke review kos
+     */
+    public function reviews()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->hasMany(Review::class);
     }
 
+    /**
+     * Relasi ke chat rooms
+     */
     public function chatRooms()
     {
         return $this->hasMany(ChatRoom::class);
     }
-
+  
+    /**
+     * Relasi ke users yang memfavoritkan kos ini
+     */
     public function favoriters()
     {
-        return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+        return $this->belongsToMany(User::class, 'favorites', 'kos_id', 'user_id')->withTimestamps();
+    }
+
+    /**
+     * Accessor untuk menampilkan label durasi sewa
+     */
+    public function getDurasiSewaAttribute($value)
+    {
+        switch ($value) {
+            case 'bulanan':
+                return 'Bulanan';
+            case 'tahunan':
+                return 'Tahunan';
+            case 'mingguan':
+                return 'Mingguan';
+            default:
+                return 'Tidak Tersedia';
+        }
     }
 
 }

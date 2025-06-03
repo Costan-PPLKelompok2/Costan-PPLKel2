@@ -21,6 +21,11 @@ return new class extends Migration
             $table->decimal('harga', 10, 2);
             $table->text('fasilitas'); // bisa disimpan sebagai teks atau JSON
             $table->string('foto')->nullable(); // path gambar
+
+            // Menambahkan kolom jenis_kos dan durasi_sewa di sini
+            $table->enum('jenis_kos', ['putra', 'putri', 'campur'])->default('campur');
+            $table->enum('durasi_sewa', ['bulanan', 'tahunan'])->default('bulanan');
+
             $table->boolean('status_ketersediaan')
                   ->default(1)
                   ->comment('1 = tersedia, 0 = penuh');

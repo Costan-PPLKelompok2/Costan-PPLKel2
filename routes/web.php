@@ -10,6 +10,7 @@ use App\Http\Controllers\{
     ReviewController,
     OwnerReviewController,
     ChatController,
+    FavoriteController,
     NotificationController,
     Auth\RegisteredUserController,
     Auth\AuthenticatedSessionController,
@@ -94,6 +95,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/owner-reviews/{id}/edit', [OwnerReviewController::class, 'edit'])->name('owner-reviews.edit');
     Route::put('/owner-reviews/{id}', [OwnerReviewController::class, 'update'])->name('owner-reviews.update');
     Route::delete('/owner-reviews/{id}', [OwnerReviewController::class, 'destroy'])->name('owner-reviews.destroy');
+
+    // Favorites
+    Route::get('/favorit', [FavoriteController::class, 'index'])->name('kos.favorites'); // Add this line
 
     // Chat
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');

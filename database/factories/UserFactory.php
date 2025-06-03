@@ -65,4 +65,12 @@ class UserFactory extends Factory
             'ownedTeams'
         );
     }
+    public function pemilikKos(): static
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'role' => 'pemilik_kos',
+            ];
+        });
+    }
 }

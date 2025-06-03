@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Kos;
 use App\Models\KosView;
 use App\Models\ChatRoom;
-use App\Models\User_profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,13 +14,9 @@ class KosController extends Controller
 {
     public function __construct()
     {
-        // Semua kecuali show, search, popular butuh login
         $this->middleware('auth')->except(['show', 'search', 'popular']);
     }
 
-    /**
-     * Dashboard pemilik kos
-     */
     public function index(Request $request)
     {
         $userId = Auth::id();
@@ -31,49 +26,34 @@ class KosController extends Controller
             $kw = $request->search;
             $query->where(fn($q) =>
                 $q->where('nama_kos', 'like', "%{$kw}%")
-                  ->orWhere('alamat',   'like', "%{$kw}%")
+                    ->orWhere('alamat', 'like', "%{$kw}%")
             );
         }
 
         $sort = $request->input('sort');
         $query->orderBy('created_at', $sort === 'terlama' ? 'asc' : 'desc');
 
-        $kosList       = $query->get();
-        $totalKos      = Kos::where('user_id', $userId)->count();
+        $kosList = $query->get();
+        $totalKos = Kos::where('user_id', $userId)->count();
         $totalPenghuni = DB::table('penghuni')
-            ->whereIn('kos_id', function($q) use ($userId) {
-                $q->select('id')
-                  ->from('kos')
-                  ->where('user_id', $userId);
-            })
-            ->count();
+            ->whereIn('kos_id', function ($q) use ($userId) {
+                $q->select('id')->from('kos')->where('user_id', $userId);
+            })->count();
 
         return view('kos.index', compact('kosList', 'totalKos', 'totalPenghuni'));
     }
 
-    /**
-     * Alias dashboard
-     */
     public function manage(Request $request)
     {
         return $this->index($request);
     }
 
-    /**
-     * 10 kos terpopuler
-     */
     public function popular()
     {
-        $popularKos = Kos::orderBy('views', 'desc')
-                         ->take(10)
-                         ->get();
-
+        $popularKos = Kos::orderBy('views', 'desc')->take(10)->get();
         return view('kos.popular', compact('popularKos'));
     }
 
-    /**
-     * Detail publik + increment view
-     */
     public function show($id)
     {
         try {
@@ -83,9 +63,9 @@ class KosController extends Controller
             $existingChatRoom = null;
             if (Auth::check()) {
                 $existingChatRoom = ChatRoom::where('kos_id', $id)
-                                        ->where('tenant_id', Auth::id())
-                                        ->where('owner_id', $kos->user_id)
-                                        ->first();
+                    ->where('tenant_id', Auth::id())
+                    ->where('owner_id', $kos->user_id)
+                    ->first();
             }
 
             return view('kos.show', compact('kos', 'existingChatRoom'));
@@ -96,13 +76,12 @@ class KosController extends Controller
 
     public function search(Request $request)
     {
-        // bangun daftar fasilitas unik
         $raw = Kos::pluck('fasilitas')->toArray();
         $set = [];
         foreach ($raw as $csv) {
             foreach (explode(',', $csv) as $name) {
                 $n = trim($name);
-                if ($n && ! isset($set[$n])) {
+                if ($n && !isset($set[$n])) {
                     $set[$n] = true;
                 }
             }
@@ -111,33 +90,28 @@ class KosController extends Controller
 
         $query = Kos::query();
 
-        // 1) keyword: nama_kos atau fasilitas
         if ($request->filled('search')) {
             $kw = $request->search;
             $query->where(fn($q) =>
                 $q->where('nama_kos', 'like', "%{$kw}%")
-                  ->orWhere('fasilitas','like', "%{$kw}%")
+                    ->orWhere('fasilitas', 'like', "%{$kw}%")
             );
         }
 
-        // 2) lokasi: alamat saja
         if ($request->filled('location')) {
-            $loc = $request->location;
-            $query->where('alamat', 'like', "%{$loc}%");
+            $query->where('alamat', 'like', "%" . $request->location . "%");
         }
 
-        // 3) rentang harga
         $min = $request->input('price_min', 0);
         $max = $request->input('price_max', 0);
         if ($min <= $max && ($min > 0 || $max > 0)) {
             $query->whereBetween('harga', [(float)$min, (float)$max]);
         }
 
-        // 4) multi‐pilih fasilitas
         if ($request->filled('facilities')) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 foreach ((array)$request->facilities as $fac) {
-                    $q->orWhere('fasilitas','like', "%{$fac}%");
+                    $q->orWhere('fasilitas', 'like', "%{$fac}%");
                 }
             });
         }
@@ -146,13 +120,9 @@ class KosController extends Controller
         return view('kos.search', compact('kosList', 'facilities'));
     }
 
-    /**
-     * Toggle ID di session “compare”
-     */
     public function toggleCompare(Request $request, $id)
     {
         $compare = session('compare', []);
-
         if (in_array($id, $compare)) {
             $compare = array_filter($compare, fn($item) => $item != $id);
             $request->session()->flash('status', 'Dihapus dari perbandingan');
@@ -165,9 +135,6 @@ class KosController extends Controller
         return back();
     }
 
-    /**
-     * Halaman perbandingan side-by-side
-     */
     public function comparePage()
     {
         $compare = session('compare', []);
@@ -183,34 +150,33 @@ class KosController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'nama_kos'            => 'required|string|max:255',
-            'deskripsi'           => 'required|string',
-            'alamat'              => 'required|string|max:255',
-            'harga'               => 'required|numeric',
-            'fasilitas'           => 'required|string',
-            'foto'                => 'nullable|image|max:2048',
-            'status_ketersediaan' => 'nullable|in:0,1',
+            'nama_kos' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'alamat' => 'required|string|max:255',
+            'harga' => 'required|numeric|min:0',
+            'fasilitas' => 'required|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'jenis_kos' => 'required|in:putra,putri,campur',
+            'durasi_sewa' => 'required|in:bulanan,tahunan',
         ]);
 
         $koordinat = LocationHelper::geocodeAddress($data['alamat']);
-
         $data['latitude'] = $koordinat['latitude'];
         $data['longitude'] = $koordinat['longitude'];
 
         if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('foto_kos','public');
+            $data['foto'] = $request->file('foto')->store('foto_kos', 'public');
         }
 
         $data['user_id'] = Auth::id();
         Kos::create($data);
 
-        return redirect()->route('kos.index')->with('success','Kos berhasil ditambahkan.');
+        return redirect()->route('kos.create')->with('success', 'Kos berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
-        $kos = Kos::where('user_id', Auth::id())
-                  ->findOrFail($id);
+        $kos = Kos::where('user_id', Auth::id())->findOrFail($id);
         return view('kos.edit', compact('kos'));
     }
 
@@ -219,153 +185,40 @@ class KosController extends Controller
         $kos = Kos::where('user_id', Auth::id())->findOrFail($id);
 
         $data = $request->validate([
-            'nama_kos'            => 'required|string|max:255',
-            'deskripsi'           => 'required|string',
-            'alamat'              => 'required|string|max:255',
-            'harga'               => 'required|numeric',
-            'fasilitas'           => 'required|string',
-            'foto'                => 'nullable|image|max:2048',
-            'status_ketersediaan' => 'nullable|in:0,1',
+            'nama_kos' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'alamat' => 'required|string|max:255',
+            'harga' => 'required|numeric|min:0',
+            'fasilitas' => 'required|string',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'jenis_kos' => 'required|in:putra,putri,campur',
+            'durasi_sewa' => 'required|in:bulanan,tahunan',
         ]);
-        
-        $koordinat = LocationHelper::geocodeAddress($data['alamat']);
-        
-        if (!$koordinat) {
-            return redirect()->back()->withErrors(['alamat' => 'Gagal mendapatkan koordinat untuk alamat yang diberikan.']);
-        }
-        else{
-            $data['latitude'] = $koordinat['latitude'];
-            $data['longitude'] = $koordinat['longitude'];
-        }
 
+        $koordinat = LocationHelper::geocodeAddress($data['alamat']);
+        $data['latitude'] = $koordinat['latitude'];
+        $data['longitude'] = $koordinat['longitude'];
 
         if ($request->hasFile('foto')) {
-            $data['foto'] = $request->file('foto')->store('foto_kos','public');
+            $data['foto'] = $request->file('foto')->store('foto_kos', 'public');
         }
 
         $kos->update($data);
-        return redirect()->route('kos.index')->with('success','Data kos berhasil diperbarui!');
+        return redirect()->route('kos.index')->with('success', 'Kos berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $kos = Kos::where('user_id', Auth::id())->findOrFail($id);
         $kos->delete();
-        return redirect()->route('kos.index')->with('success','Kos berhasil dihapus!');
+
+        return redirect()->route('kos.index')->with('success', 'Kos berhasil dihapus.');
     }
 
-    /**
-     * Inisiasi chat dengan pemilik kos dari halaman detail kos
-     */
-    // App\Http\Controllers\KosController.php
-    public function initiateChatWithOwner($kosId)
+    // Halaman eksplorasi kos untuk penyewa
+    public function explore()
     {
-        try {
-            $kos = Kos::findOrFail($kosId);
-            
-            if (!Auth::check()) {
-                return redirect()->route('login')->with('message', 'Silakan login terlebih dahulu untuk menghubungi pemilik kos.');
-            }
-
-            $tenantId = Auth::id();
-            $ownerId = $kos->user_id; // Atau $kos->pemilik->id jika relasi sudah diubah dan itu yang benar
-
-            if ($tenantId == $ownerId) {
-                return redirect()->back()->with('error', 'Anda tidak dapat mengirim pesan ke diri sendiri.');
-            }
-
-            // Cari atau buat ChatRoom
-            $chatRoom = ChatRoom::firstOrCreate(
-                [
-                    'kos_id' => $kosId,
-                    'tenant_id' => $tenantId,
-                    'owner_id' => $ownerId
-                ]
-                // Tidak perlu array kedua jika hanya ingin mencari atau membuat dengan parameter di atas
-            );
-
-            // Arahkan ke halaman chat (pastikan nama route konsisten)
-            return redirect()->route('chat.show', $chatRoom->id) 
-                            ->with('success', 'Chat room berhasil dibuka. Anda dapat mulai mengirim pesan.');
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return redirect()->back()->with('error', 'Kos tidak ditemukan.');
-        } catch (\Exception $e) {
-            // Log error $e->getMessage()
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat membuka chat: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Get detail kos dengan informasi chat
-     */
-
-    /**
-     * Get kos yang sedang dalam proses chat (untuk pemilik kos)
-     */
-    public function getKosWithActiveChats()
-    {
-        try {
-            $ownerId = Auth::id();
-            
-            $kosWithChats = Kos::where('user_id', $ownerId)
-                              ->whereHas('chatRooms')
-                              ->with(['chatRooms' => function($query) {
-                                  $query->with(['tenant', 'latestMessage'])
-                                        ->orderBy('updated_at', 'desc');
-                              }])
-                              ->get();
-
-            return response()->json([
-                'success' => true,
-                'data' => $kosWithChats
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mengambil data kos dengan chat aktif'
-            ], 500);
-        }
-    }
-
-    /**
-     * Get statistik chat untuk dashboard pemilik kos
-     */
-    public function getChatStatistics()
-    {
-        try {
-            $ownerId = Auth::id();
-            
-            $totalChatRooms = ChatRoom::where('owner_id', $ownerId)->count();
-            $activeChatRooms = ChatRoom::where('owner_id', $ownerId)
-                                     ->where('updated_at', '>=', now()->subDays(30))
-                                     ->count();
-            $unreadMessages = \App\Models\Message::whereHas('chatRoom', function($query) use ($ownerId) {
-                                                     $query->where('owner_id', $ownerId);
-                                                 })
-                                                 ->where('sender_id', '!=', $ownerId)
-                                                 ->where('is_read', false)
-                                                 ->count();
-
-            $mostInquiredKos = Kos::where('user_id', $ownerId)
-                                 ->withCount('chatRooms')
-                                 ->orderBy('chat_rooms_count', 'desc')
-                                 ->limit(5)
-                                 ->get();
-
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'total_chat_rooms' => $totalChatRooms,
-                    'active_chat_rooms' => $activeChatRooms,
-                    'unread_messages' => $unreadMessages,
-                    'most_inquired_kos' => $mostInquiredKos
-                ]
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mengambil statistik chat'
-            ], 500);
-        }
+        $kosList = Kos::latest()->get();
+        return view('kos.explore', compact('kosList'));
     }
 }
