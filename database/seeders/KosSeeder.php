@@ -4,15 +4,19 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Kos;
-use Illuminate\Support\Str;
 use App\Models\User;
-
+use Illuminate\Support\Str;
 
 class KosSeeder extends Seeder
 {
     public function run(): void
     {
         $id_pemilik = User::where('role', 'pemilik')->pluck('id')->toArray();
+
+        if (empty($id_pemilik)) {
+            $this->command->warn('Seeder KosSeeder dilewati: tidak ada user dengan role "pemilik".');
+            return;
+        }
 
         $fotoList = [
             'foto_kos/oXBEAeue0fwronT9AtamzKmL9UaKiqGNyfUqeXnB.jpg',
@@ -38,9 +42,9 @@ class KosSeeder extends Seeder
                 'foto' => $fotoList[array_rand($fotoList)],
                 'status_ketersediaan' => (bool)rand(0, 1),
                 'views' => rand(0, 500),
-                'latitude' => -7.0 + (rand(0, 1000) / 1000),
-                'longitude' => 110.0 + (rand(0, 1000) / 1000),
             ]);
         }
+
+        $this->command->info('Seeder KosSeeder berhasil menambahkan 10 data kos.');
     }
 }

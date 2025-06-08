@@ -13,11 +13,11 @@ class OwnerSeeder extends Seeder
     public function run(): void
     {
         // Cek apakah sudah ada user owner, kalau belum buat 3 owner
-        $existingOwner = User::where('role', 'owner')->first();
+        $existingOwner = User::where('role', 'pemilik')->first();
 
         if (!$existingOwner) {
             User::factory()->count(3)->create([
-                'role' => 'owner', // pastikan ini ada di migration users table
+                'role' => 'pemilik', // pastikan ini ada di migration users table
             ]);
             $this->command->info("3 Owner users created.");
         } else {

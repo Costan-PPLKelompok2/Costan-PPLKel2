@@ -30,7 +30,7 @@ class ReviewController extends Controller
             'kos_id' => $request->kos_id,
             'rating' => $request->rating,
             'comment' => $request->comment,
-            'reviewer_id' => Auth::id(),
+            //'reviewer_id' => Auth::id(),
         ]);
 
         return redirect()->back()->with('success', 'Review berhasil ditambahkan!');
