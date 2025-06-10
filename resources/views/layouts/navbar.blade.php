@@ -40,13 +40,13 @@
                 <ul class="nav navbar-nav ml-auto" data-in="fadeInDown" data-out="fadeOutUp">
                     <li class="nav-item {{ Route::is('home.index') ? 'active' : '' }}"><a class="nav-link" href="{{route('redirect')}}">Home</a></li>
                     <li class="nav-item {{ Route::is('home.daftarkos') ? 'active' : '' }}"><a class="nav-link" href="{{route('home.daftarkos')}}">Daftar Kos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Favorite</a></li>
+                    <li class="nav-item{{ Route::is('kos.favorites') ? 'active' : '' }}"><a class="nav-link" href="{{ route('kos.favorites') }}">Favorite</a></li>
                 </ul>
             </div>         
 
-            <div class="attr-nav">
+            <div class="navbar-header">
                 <ul>
-                    <li class="search"><a href="#"><i class="fa fa-search"></i></a></li>
+                    <li class="nav-item {{ Route::is('kos.search') ? 'active' : '' }}"><a class="nav-link" href="{{route('kos.search')}}"><i class="fa fa-search"></i></a></li>
                 </ul>
             </div>
             <!-- /.navbar-collapse -->
@@ -64,8 +64,8 @@
                                     $initial = strtoupper(substr($user->name, 0, 1));
                                 @endphp
 
-                                @if ($user->foto)
-                                    <img src="{{ asset('storage/' . $user->foto) }}" alt="Foto Profil" class="rounded-circle" width="35" height="35" style="object-fit: cover; margin-left: 10px;">
+                                @if ($user->profile_photo_path)
+                                    <img src="{{ asset('storage/' . $user->profile_photo_path) }}" alt="Foto Profil" class="rounded-circle" width="35" height="35" style="object-fit: cover; margin-left: 10px;">
                                 @else
                                     <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 35px; height: 35px; font-weight: bold; margin-left: 10px;">
                                         {{ $initial }}
@@ -77,16 +77,20 @@
                                     {{ __('Manage Account') }}
                                 </span>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('profile.show') }}">{{ __('Profile') }}</a>
+                                <a class="dropdown-item" href="{{ route('profile.edit') }}"> <i class="fa fa-user"></i> {{ __('Profile') }}</a>
 
                                 @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
                                     <a class="dropdown-item" href="{{ route('api-tokens.index') }}">{{ __('API Tokens') }}</a>
                                 @endif
 
                                 <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ route('chat.index') }}">
+                                    <i class="fa fa-comments"></i> {{ __('Chat') }}
+                                </a>
+                                <div class="dropdown-divider"></div>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button class="dropdown-item" type="submit">{{ __('Log Out') }}</button>
+                                    <button class="dropdown-item" type="submit"> <i class="fa fa-arrow-left"></i> {{ __('Log Out') }}</button>
                                 </form>
                             </div>
                         </li>
@@ -140,6 +144,29 @@
             </div>
         </div>
     </nav>
+
+    @if(session('success'))
+        <div class="container mt-3">
+            <div class="alert alert-success alert-dismissible fade show shadow" role="alert" style="border-radius: 8px;">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="container mt-3">
+            <div class="alert alert-danger alert-dismissible fade show shadow" role="alert" style="border-radius: 8px;">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    @endif
+    
     <div class="min-h-screen bg-gray-100">
         <!-- Page Content -->
         <main class="container-fluid">

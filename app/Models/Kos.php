@@ -34,6 +34,11 @@ class Kos extends Model
     /**
      * Relasi ke pemilik kos (User)
      */
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
     public function pemilik()
     {
         return $this->belongsTo(User::class, 'user_id');

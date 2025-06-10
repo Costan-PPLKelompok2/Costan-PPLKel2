@@ -103,8 +103,23 @@ class User extends Authenticatable
         return $this->hasMany(OwnerReview::class, 'penyewa_id');
     }
 
-    public function favoriteKos()
+    public function kos()
+{
+    return $this->hasMany(Kos::class, 'user_id');
+}
+
+    public function isAdmin()
     {
-        return $this->belongsToMany(Kos::class, 'favorites')->withTimestamps();
+        return $this->role === 'admin';
+    }
+
+    public function isPemilik()
+    {
+        return $this->role === 'pemilik';
+    }
+
+    public function isPenyewa()
+    {
+        return $this->role === 'penyewa';
     }
 }

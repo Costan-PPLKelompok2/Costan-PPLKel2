@@ -1,6 +1,5 @@
 <?php
 
-<<<<<<< HEAD:dcost/tests/Pest.php
 uses(
     Tests\DuskTestCase::class,
     // Illuminate\Foundation\Testing\DatabaseMigrations::class,
@@ -26,8 +25,6 @@ uses(
     // Illuminate\Foundation\Testing\DatabaseMigrations::class,
 )->in('Browser');
 
-=======
->>>>>>> 6a10184dc948152784082b2f35cfe9ea475ef1bb:tests/Pest.php
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

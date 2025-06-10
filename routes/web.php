@@ -61,7 +61,7 @@ Route::post('/email/verification-notification', [EmailVerificationNotificationCo
 
 // 7. Protected routes
 Route::middleware('auth')->group(function () {
-    Route::get('/admin', [PemilikController::class, 'index'])->name('pemilik.dashboard');
+    Route::get('/admin', [PemilikController::class, 'index'])->name('admin.index');
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -98,6 +98,8 @@ Route::middleware('auth')->group(function () {
 
     // Favorites
     Route::get('/favorit', [FavoriteController::class, 'index'])->name('kos.favorites'); // Add this line
+    Route::post('/favorit/{kos}', [FavoriteController::class, 'store'])->name('kos.favorite.store');
+    Route::delete('/favorit/{kos}', [FavoriteController::class, 'destroy'])->name('kos.favorite.destroy');
 
     // Chat
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
@@ -109,6 +111,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+    Route::post('/kos/{id_kos}/compare-toggle', [KosController::class, 'toggleCompare'])
+     ->name('kos.compare.toggle');
+    Route::get('/kos/compare', [KosController::class, 'comparePage'])
+     ->name('kos.compare');
 
 });
 
@@ -130,10 +137,10 @@ Route::get('/review-dummy', fn () => view('review.dummy'))->name('review.dummy')
 Route::get('/redirect', [HomeController::class, 'redirect'])->name('redirect');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/faq/manage', [FaqController::class, 'index'])->name('faq.manage.index');
-    Route::get('/admin/faq/create', [FaqController::class, 'create'])->name('faq.manage.create');
-    Route::post('/admin/faq/store', [FaqController::class, 'store'])->name('faq.manage.store');
-    Route::get('/admin/faq/{manage}/edit', [FaqController::class, 'edit'])->name('faq.manage.edit');
-    Route::put('/admin/faq/{manage}', [FaqController::class, 'update'])->name('faq.manage.update');
-    Route::delete('/admin/faq/{manage}', [FaqController::class, 'destroy'])->name('faq.manage.destroy');
+    Route::get('/faq/manage', [FaqController::class, 'index'])->name('faq.manage.index');
+    Route::get('/faq/create', [FaqController::class, 'create'])->name('faq.manage.create');
+    Route::post('/faq/store', [FaqController::class, 'store'])->name('faq.manage.store');
+    Route::get('/faq/{manage}/edit', [FaqController::class, 'edit'])->name('faq.manage.edit');
+    Route::put('/faq/{manage}', [FaqController::class, 'update'])->name('faq.manage.update');
+    Route::delete('/faq/{manage}', [FaqController::class, 'destroy'])->name('faq.manage.destroy');
 });

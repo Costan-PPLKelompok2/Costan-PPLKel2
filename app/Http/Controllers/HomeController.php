@@ -62,8 +62,27 @@ class HomeController extends Controller
     }
 
 
-    public function redirect()
+    public function redirect(Request $request)
     {
+        if ($request->has('error')) {
+            session()->flash('error', $request->error);
+        }
+        if ($request->has('success')) {
+            session()->flash('success', $request->success);
+        }
+        if ($request->has('info')) {
+            session()->flash('info', $request->info);
+        }
+        if ($request->has('warning')) {
+            session()->flash('warning', $request->warning);
+        }
+        if ($request->has('message')) {
+            session()->flash('message', $request->message);
+        }
+        if ($request->has('status')) {
+            session()->flash('status', $request->status);
+        }
+        
         if (auth()->check()) {  
             if (auth()->user()->role == 'admin') {
                 return redirect()->route('admin.index');

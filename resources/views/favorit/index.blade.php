@@ -90,49 +90,52 @@
                     <div class="row g-4 justify-content-center">
                         @foreach($kosFavorit as $kos)
                             <div class="col-md-6 col-lg-4 d-flex">
-                                <div class="card shadow-sm border-0 flex-fill kos-card">
-                                    <div class="position-relative">
-                                        @if($kos->foto)
-                                            <img src="{{ asset('storage/' . $kos->foto) }}" class="card-img-top object-fit-cover kos-image" alt="Foto Kos">
-                                        @else
-                                            <img src="https://placehold.co/400x200/e0e0e0/555555?text=Tidak+ada+foto" class="card-img-top object-fit-cover kos-image" alt="Tidak ada foto">
-                                        @endif
-                                        {{-- Badge Jenis Kos --}}
-                                        @if($kos->jenis_kos)
-                                            <span class="badge bg-primary position-absolute top-0 start-0 m-3 p-2 rounded-pill kos-type-badge">{{ $kos->jenis_kos }}</span>
-                                        @endif
-                                    </div>
-                                    <div class="card-body p-4 d-flex flex-column">
-                                        <h5 class="card-title fw-bold text-dark mb-1 kos-name text-truncate" title="{{ $kos->nama_kos }}">{{ $kos->nama_kos }}</h5>
-                                        <p class="card-subtitle text-muted mb-3 kos-address text-truncate" title="{{ $kos->alamat }}"><i class="fas fa-map-marker-alt me-1"></i> {{ $kos->alamat }}</p>
+                                <a href="{{ route('kos.show', $kos->id) }}" class="text-decoration-none text-dark">
+                                    {{-- Kos Card --}}
+                                    <div class="card shadow-sm border-0 flex-fill kos-card">
+                                        <div class="position-relative">
+                                            @if($kos->foto)
+                                                <img src="{{ asset('storage/' . $kos->foto) }}" class="card-img-top object-fit-cover kos-image" alt="Foto Kos">
+                                            @else
+                                                <img src="https://placehold.co/400x200/e0e0e0/555555?text=Tidak+ada+foto" class="card-img-top object-fit-cover kos-image" alt="Tidak ada foto">
+                                            @endif
+                                            {{-- Badge Jenis Kos --}}
+                                            @if($kos->jenis_kos)
+                                                <span class="badge bg-primary position-absolute top-0 start-0 m-3 p-2 rounded-pill kos-type-badge">{{ $kos->jenis_kos }}</span>
+                                            @endif
+                                        </div>
+                                        <div class="card-body p-4 d-flex flex-column">
+                                            <h5 class="card-title fw-bold text-dark mb-1 kos-name text-truncate" title="{{ $kos->nama_kos }}">{{ $kos->nama_kos }}</h5>
+                                            <p class="card-subtitle text-muted mb-3 kos-address text-truncate" title="{{ $kos->alamat }}"><i class="fas fa-map-marker-alt me-1"></i> {{ $kos->alamat }}</p>
 
-                                        @if($kos->durasi_sewa)
-                                            <p class="card-text mb-1"><small class="text-muted">Durasi Sewa: <span class="fw-semibold">{{ $kos->durasi_sewa }}</span></small></p>
-                                        @endif
+                                            @if($kos->durasi_sewa)
+                                                <p class="card-text mb-1"><small class="text-muted">Durasi Sewa: <span class="fw-semibold">{{ $kos->durasi_sewa }}</span></small></p>
+                                            @endif
 
-                                        <hr class="my-3">
+                                            <hr class="my-3">
 
-                                        <ul class="list-unstyled mb-0 kos-facilities flex-grow-1">
-                                            <li>
-                                                <i class="fas fa-check-circle text-success me-2"></i>
-                                                Fasilitas: <span class="facility-text" title="{{ $kos->fasilitas }}">{{ \Illuminate\Support\Str::limit($kos->fasilitas, 80, '...') }}</span>
-                                            </li>
-                                        </ul>
+                                            <ul class="list-unstyled mb-0 kos-facilities flex-grow-1">
+                                                <li>
+                                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                                    Fasilitas: <span class="facility-text" title="{{ $kos->fasilitas }}">{{ \Illuminate\Support\Str::limit($kos->fasilitas, 80, '...') }}</span>
+                                                </li>
+                                            </ul>
 
-                                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
-                                            <h4 class="text-primary fw-bold mb-0 kos-price">
-                                                Rp {{ number_format($kos->harga, 0, ',', '.') }}<small class="text-muted ms-1 price-suffix">/{{ strtolower($kos->durasi_sewa ?? 'bulan') }}</small>
-                                            </h4>
-                                            <form action="{{ route('kos.unfavorite', $kos->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kos ini dari favorit?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill remove-favorite-button">
-                                                    <i class="fas fa-heart-broken me-1"></i> Hapus
-                                                </button>
-                                            </form>
+                                            <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                                                <h4 class="text-primary fw-bold mb-0 kos-price">
+                                                    Rp {{ number_format($kos->harga, 0, ',', '.') }}<small class="text-muted ms-1 price-suffix">/{{ strtolower($kos->durasi_sewa ?? 'bulan') }}</small>
+                                                </h4>
+                                                <form action="{{ route('kos.favorite.destroy', $kos->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kos ini dari favorit?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill remove-favorite-button">
+                                                        <i class="fas fa-heart-broken me-1"></i> Hapus
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         @endforeach
                     </div>

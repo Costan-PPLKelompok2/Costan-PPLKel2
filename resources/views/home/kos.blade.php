@@ -12,13 +12,15 @@
                 </div>
             </div>
             <div class="container mb-4">
-            <div class="btn-group" role="group" aria-label="Filter Kos">
-                <a href="{{ route('home.daftarkos', ['filter' => 'all']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'all' ? 'active' : '' }}">Semua</a>
-                <a href="{{ route('home.daftarkos', ['filter' => 'latest']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'latest' ? 'active' : '' }}">Terbaru</a>
-                <a href="{{ route('home.daftarkos', ['filter' => 'popular']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'popular' ? 'active' : '' }}">Populer</a>
-                <a href="{{ route('home.daftarkos', ['filter' => 'price_low']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'price_low' ? 'active' : '' }}">Harga Terendah</a>
-                <a href="{{ route('home.daftarkos', ['filter' => 'price_high']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'price_high' ? 'active' : '' }}">Harga Tertinggi</a>
-            </div>
+            <div class="container mb-4 d-flex justify-content-between align-items-center">
+                <div class="btn-group" role="group" aria-label="Filter Kos">
+                    <a href="{{ route('home.daftarkos', ['filter' => 'all']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'all' ? 'active' : '' }}">Semua</a>
+                    <a href="{{ route('home.daftarkos', ['filter' => 'latest']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'latest' ? 'active' : '' }}">Terbaru</a>
+                    <a href="{{ route('home.daftarkos', ['filter' => 'popular']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'popular' ? 'active' : '' }}">Populer</a>
+                    <a href="{{ route('home.daftarkos', ['filter' => 'price_low']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'price_low' ? 'active' : '' }}">Harga Terendah</a>
+                    <a href="{{ route('home.daftarkos', ['filter' => 'price_high']) }}#daftarkos" class="btn btn-outline-primary {{ request('filter') == 'price_high' ? 'active' : '' }}">Harga Tertinggi</a>
+                </div>
+                <a href="{{ route('kos.search') }}" class="btn btn-outline-secondary">Cari Kos</a>
             </div>
             <div class="row special-list">
                 @forelse($kost as $kos)

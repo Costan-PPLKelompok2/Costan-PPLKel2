@@ -1,5 +1,5 @@
 <footer>
-        <div class="footer-main">
+        <div class="footer-main lock-footer">
             <div class="container">
                 <div class="row">
                     <div class="col-lg-4 col-md-12 col-sm-12">

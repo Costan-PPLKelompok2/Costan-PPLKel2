@@ -20,10 +20,32 @@
     <!-- Layout styles -->
     <link rel="stylesheet" href="{{asset('admin_assets/css/style.css')}}">
     <!-- End layout styles -->
-    <link rel="shortcut icon" href="{{asset('admin_assets/images/favicon.png')}}" />
   </head>
   <body>
     <div class="container-scroller">
+      <!-- Alerts -->
+      @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" style="border-radius: 10px; margin: 20px;">
+          <i class="fas fa-check-circle me-2"></i> {{ session('success') }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      @endif
+      @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" style="border-radius: 10px; margin: 20px;">
+          <i class="fas fa-exclamation-circle me-2"></i> {{ session('error') }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      @endif
+      @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" style="border-radius: 10px; margin: 20px;">
+          <ul class="mb-0">
+            @foreach($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      @endif
       <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
@@ -131,110 +153,136 @@
           </div>
         </nav>
         <!-- partial -->
-        <div class="main-panel">
-          <div class="content-wrapper">
-            <div class="row">
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{$totalKos}}</h3>
+         @if($user->role == 'admin')
+          <div class="main-panel">
+            <div class="content-wrapper">
+              <div class="row">
+                {{-- Total Semua Kos --}}
+                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-9">
+                          <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{ $totalAllKos }}</h3>
+                          </div>
+                        </div>
+                        <div class="col-3">
+                          <div class="icon icon-box-success">
+                            <span class="mdi mdi-home-city-outline icon-item"></span>
+                          </div>
                         </div>
                       </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
+                      <h6 class="text-muted font-weight-normal">Total Semua Kos</h6>
                     </div>
-                    <h6 class="text-muted font-weight-normal">Jumlah Kos Anda</h6>
+                  </div>
+                </div>
+
+                {{-- Total Semua Views --}}
+                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-9">
+                          <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{ $totalAllViews }}</h3>
+                          </div>
+                        </div>
+                        <div class="col-3">
+                          <div class="icon icon-box-success">
+                            <span class="mdi mdi-eye-outline icon-item"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <h6 class="text-muted font-weight-normal">Total Semua Views</h6>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">{{$totalViews}}</h3>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Jumlah Views</h6>
-                  </div>
+
+              {{-- Chart per Pemilik --}}
+              <div class="row mt-4">
+                <div class="col-12">
+                  <h4>Statistik Per Pemilik</h4>
                 </div>
-              </div>
-              <!-- <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$12.34</h3>
-                          <p class="text-danger ml-2 mb-0 font-weight-medium">-2.4%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-danger">
-                          <span class="mdi mdi-arrow-bottom-left icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Daily Income</h6>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0">$31.53</h3>
-                          <p class="text-success ml-2 mb-0 font-weight-medium">+3.5%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="icon icon-box-success ">
-                          <span class="mdi mdi-arrow-top-right icon-item"></span>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="text-muted font-weight-normal">Expense current</h6>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row"> -->
-            <div class="col-md-8 grid-margin stretch-card">
-              <div class="card">
-                  <div class="card-body">
-                    <div class="d-flex flex-row justify-content-between"></div>
-                      <canvas id="kosViewChart"></canvas>
+
+                @foreach ($pemilikStats as $index => $pemilik)
+                  <div class="col-md-6 grid-margin stretch-card">
+                    <div class="card">
+                      <div class="card-body">
+                        <h5 class="card-title">{{ $pemilik['nama'] }}</h5>
+                        <canvas id="chartKos{{ $index }}"></canvas>
                       </div>
                     </div>
                   </div>
+                @endforeach
               </div>
             </div>
           </div>
-          <!-- content-wrapper ends -->
-          <!-- partial:partials/_footer.html -->
-          <footer class="footer">
-            <div class="d-sm-flex justify-content-center justify-content-sm-between">
-              <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
-              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
+         @elseif($user->role == 'pemilik')
+          <div class="main-panel">
+            <div class="content-wrapper">
+              <div class="row">
+                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-9">
+                          <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{$totalKos}}</h3>
+                          </div>
+                        </div>
+                        <div class="col-3">
+                          <div class="icon icon-box-success ">
+                            <span class="mdi mdi-home-city-outline icon-item"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <h6 class="text-muted font-weight-normal">Jumlah Kos Anda</h6>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                  <div class="card">
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-9">
+                          <div class="d-flex align-items-center align-self-start">
+                            <h3 class="mb-0">{{$totalViews}}</h3>
+                          </div>
+                        </div>
+                        <div class="col-3">
+                          <div class="icon icon-box-success">
+                            <span class="mdi mdi-eye-outline icon-item"></span>
+                          </div>
+                        </div>
+                      </div>
+                      <h6 class="text-muted font-weight-normal">Jumlah Views</h6>
+                    </div>
+                  </div>
+                </div>
+              <div class="col-md-8 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                      <div class="d-flex flex-row justify-content-between"></div>
+                        <canvas id="kosViewChart"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
             </div>
-          </footer>
-          <!-- partial -->
-        </div>
+            <!-- content-wrapper ends -->
+            <!-- partial:partials/_footer.html -->
+            <footer class="footer">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
+                <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
+              </div>
+            </footer>
+            <!-- partial -->
+          </div>
+          @endif
         <!-- main-panel ends -->
       </div>
       <!-- page-body-wrapper ends -->
@@ -260,28 +308,70 @@
     <!-- Custom js for this page -->
     <script src="{{asset('admin_assets/js/dashboard.js')}}"></script>
     <!-- End custom js for this page -->
-     <script src="https://cdn.jsdelivr.net/npm/chart.js')"></script>
-      <script>
-          const ctx = document.getElementById('kosViewChart').getContext('2d');
-          const kosChart = new Chart(ctx, {
-              type: 'bar',
-              data: {
-                  labels: @json($viewsStatistik->pluck('nama_kos')),
-                  datasets: [{
-                      label: 'Jumlah Views',
-                      data: @json($viewsStatistik->pluck('views')),
-                      backgroundColor: 'rgba(54, 162, 235, 0.7)',
-                  }]
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const kosViewChartElem = document.getElementById('kosViewChart');
+        if (kosViewChartElem) {
+            const ctx = kosViewChartElem.getContext('2d');
+            const kosChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: @json($viewsStatistik->pluck('nama_kos')),
+                    datasets: [{
+                        label: 'Jumlah Views',
+                        data: @json($viewsStatistik->pluck('views')),
+                        backgroundColor: "#b0b435",
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
+        @foreach ($pemilikStats as $index => $pemilik)
+          const kosNames{{ $index }} = @json(collect($pemilik['kosViews'])->pluck('nama_kos'));
+          const kosViews{{ $index }} = @json(collect($pemilik['kosViews'])->pluck('views'));
+        
+          // Generate one random color for this owner
+          const r{{ $index }} = Math.floor(Math.random() * 200) + 30;
+          const g{{ $index }} = Math.floor(Math.random() * 200) + 30;
+          const b{{ $index }} = Math.floor(Math.random() * 200) + 30;
+          const ownerColor{{ $index }} = `rgba(${r{{ $index }}}, ${g{{ $index }}}, ${b{{ $index }}}, 0.7)`;
+          // Make all bars the same color for this owner
+          const barColors{{ $index }} = kosNames{{ $index }}.map(() => ownerColor{{ $index }});
+        
+          const ctxKos{{ $index }} = document.getElementById('chartKos{{ $index }}').getContext('2d');
+          new Chart(ctxKos{{ $index }}, {
+            type: 'bar',
+            data: {
+              labels: kosNames{{ $index }},
+              datasets: [{
+                label: 'Views Kos',
+                data: kosViews{{ $index }},
+                backgroundColor: barColors{{ $index }},
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: true },
+                title: {
+                  display: true,
+                  text: 'Total Kos: {{ $pemilik["jumlahKos"] }}, Total Views: {{ $pemilik["jumlahViews"] }}'
+                }
               },
-              options: {
-                  scales: {
-                      y: {
-                          beginAtZero: true,
-                          ticks: { stepSize: 1 }
-                      }
-                  }
+              scales: {
+                y: { beginAtZero: true }
               }
+            }
           });
-      </script>
+        @endforeach
+    </script>
   </body>
 </html>

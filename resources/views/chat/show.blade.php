@@ -126,6 +126,7 @@
 <div id="toast-notification" class="fixed bottom-5 right-5 bg-gray-700 text-white py-2 px-4 rounded-lg shadow-md text-sm opacity-0 transition-opacity duration-300 z-50">
     Pesan notifikasi!
 </div>
+@endsection
 
 @push('scripts')
 <script>

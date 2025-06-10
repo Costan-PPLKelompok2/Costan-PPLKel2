@@ -27,7 +27,7 @@ class KosSeeder extends Seeder
             'AC,Lemari,Parkir Motor',
         ];
 
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 50; $i++) {
             Kos::create([
                 'user_id' => $id_pemilik[array_rand($id_pemilik)],
                 'nama_kos' => 'Kos ' . Str::random(5),
@@ -37,7 +37,7 @@ class KosSeeder extends Seeder
                 'fasilitas' => $fasilitasList[array_rand($fasilitasList)],
                 'foto' => $fotoList[array_rand($fotoList)],
                 'status_ketersediaan' => (bool)rand(0, 1),
-                'views' => rand(0, 500),
+                'views' => rand(0, 1000),
                 'latitude' => -7.0 + (rand(0, 1000) / 1000),
                 'longitude' => 110.0 + (rand(0, 1000) / 1000),
             ]);

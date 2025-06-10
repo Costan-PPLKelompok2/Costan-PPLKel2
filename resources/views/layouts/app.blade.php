@@ -30,21 +30,6 @@
     />
 </head>
 <body class="font-sans antialiased">
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-        @if (request()->routeIs('kos.show'))
-            <a class="navbar-brand" href="{{ route('dashboard') }}">Lihat Semua Kos</a>
-        @else
-            <a class="navbar-brand" href="{{ route('profile.edit') }}">User Profile</a>
-        @endif
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
-
     <!-- Banner -->
     <x-banner />
 
