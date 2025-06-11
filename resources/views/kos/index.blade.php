@@ -127,9 +127,12 @@
                     </div>
 
                     {{-- Tombol Tambah Kos --}}
-                    <div class="col-6 col-lg-2 col-md-2 d-flex justify-content-end">
+                    <div class="d-flex justify-content-between align-items-center">
                         <a href="{{ route('kos.create') }}" class="btn btn-success text-white add-kos-button">
                             <i class="fas fa-plus me-2"></i> Tambah Kos
+                        </a>
+                        <a href="{{ route('admin.index') }}" class="btn btn-primary text-white add-kos-button">
+                            <i class="fas fa-statistic me-2"></i> Lihat Statistik
                         </a>
                     </div>
                 </form>

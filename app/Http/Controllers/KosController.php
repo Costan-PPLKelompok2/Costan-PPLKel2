@@ -196,8 +196,6 @@ class KosController extends Controller
             'harga' => 'required|numeric|min:0',
             'fasilitas' => 'required|string',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'jenis_kos' => 'required|in:putra,putri,campur',
-            'durasi_sewa' => 'required|in:bulanan,tahunan',
         ]);
 
         $koordinat = LocationHelper::geocodeAddress($data['alamat']);

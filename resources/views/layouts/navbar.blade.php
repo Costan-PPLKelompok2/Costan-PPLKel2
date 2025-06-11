@@ -41,6 +41,7 @@
                     <li class="nav-item {{ Route::is('home.index') ? 'active' : '' }}"><a class="nav-link" href="{{route('redirect')}}">Home</a></li>
                     <li class="nav-item {{ Route::is('home.daftarkos') ? 'active' : '' }}"><a class="nav-link" href="{{route('home.daftarkos')}}">Daftar Kos</a></li>
                     <li class="nav-item{{ Route::is('kos.favorites') ? 'active' : '' }}"><a class="nav-link" href="{{ route('kos.favorites') }}">Favorite</a></li>
+                    <li class="nav-item{{ Route::is('faq.show') ? 'active' : '' }}"><a class="nav-link" href="{{ route('faq.show') }}">FAQ</a></li>
                 </ul>
             </div>         
 

@@ -10,7 +10,7 @@
                             <!-- Button for search, conditionally link to login/register or search -->
                             <p>
                                 @guest
-                                    <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
+                                    <a class="btn hvr-hover" href="{{ route('login') }}">Login untuk Cari Kos Anda</a>
                                 @else
                                     <a class="btn hvr-hover" href="{{ route('home.daftarkos') }}">Cari Kos Anda</a> <!-- Gantilah 'search' dengan route pencarian kos Anda -->
                                 @endguest
@@ -28,7 +28,7 @@
                             <p class="m-b-40">Cari kos idaman anda sekarang!</p>
                             <p>
                                 @guest
-                                    <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
+                                    <a class="btn hvr-hover" href="{{ route('login') }}">Login untuk Cari Kos Anda</a>
                                 @else
                                     <a class="btn hvr-hover" href="{{ route('home.daftarkos') }}">Cari Kos Anda</a>
                                 @endguest
@@ -46,7 +46,7 @@
                             <p class="m-b-40">Cari kos idaman anda sekarang!</p>
                             <p>
                                 @guest
-                                    <a class="btn hvr-hover" href="{{ route('register') }}">Login untuk Cari Kos Anda</a>
+                                    <a class="btn hvr-hover" href="{{ route('login') }}">Login untuk Cari Kos Anda</a>
                                 @else
                                     <a class="btn hvr-hover" href="{{ route('home.daftarkos') }}">Cari Kos Anda</a>
                                 @endguest
